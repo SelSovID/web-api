@@ -1,8 +1,8 @@
 import { Context } from "koa"
 import Router from "koa-router"
-import { MyContext } from "../index"
-import statusCodes from "status-code-enum"
-import User from "../model/User"
+import { MyContext } from "../index.js"
+import { StatusCode } from "status-code-enum"
+import User from "../model/User.js"
 
 export const retrieveToken = (ctx: Context): string | null => {
   if (ctx.headers.authorization) {
@@ -28,7 +28,7 @@ router.post("/", async ctx => {
   const token = retrieveToken(ctx)
 
   if (token == null) {
-    ctx.status = statusCodes.ClientErrorBadRequest
+    ctx.status = StatusCode.ClientErrorBadRequest
     ctx.body = "Bad request. No token provided."
   } else {
     const hash = await User.hash(token)
@@ -41,9 +41,9 @@ router.post("/", async ctx => {
         sameSite: "strict",
         secure: true,
       })
-      ctx.status = statusCodes.SuccessCreated
+      ctx.status = StatusCode.SuccessCreated
     } else {
-      ctx.status = statusCodes.ClientErrorUnauthorized
+      ctx.status = StatusCode.ClientErrorUnauthorized
       ctx.body = "Unauthorized"
     }
   }

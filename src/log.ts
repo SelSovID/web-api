@@ -1,4 +1,4 @@
-import Pino from "pino"
+import { pino } from "pino"
 import { hrtime } from "process"
 
 const pinoTransport =
@@ -13,7 +13,7 @@ const pinoTransport =
       }
     : {}
 
-const logger = Pino({
+const logger = pino({
   level: process.env.LOG_LEVEL ?? "debug",
   ...pinoTransport,
 })

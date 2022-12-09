@@ -2,7 +2,8 @@ import "dotenv/config"
 import { Options } from "@mikro-orm/core"
 import { PostgreSqlDriver } from "@mikro-orm/postgresql"
 import { TsMorphMetadataProvider } from "@mikro-orm/reflection"
-import logger from "./log"
+import logger from "./log.js"
+import User from "./model/User.js"
 
 const dbConnctionString = process.env.DB_CONNECTION
 
@@ -14,8 +15,7 @@ if (!dbConnctionString) {
 const config: Options<PostgreSqlDriver> = {
   metadataProvider: TsMorphMetadataProvider,
   clientUrl: dbConnctionString,
-  entities: ["./build/model"],
-  entitiesTs: ["./src/model"],
+  entities: [User],
   type: "postgresql",
   migrations: {
     path: "build/migrations",

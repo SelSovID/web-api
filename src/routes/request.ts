@@ -1,5 +1,5 @@
 import Router from "koa-router"
-import { MyContext } from "../index"
+import { MyContext } from "../index.js"
 
 const router = new Router<{}, MyContext>()
 
