@@ -2,11 +2,23 @@ import koa from "koa"
 import { createServer } from "http"
 import koaBody from "koa-body"
 import Router from "koa-router"
+import orm from "./orm"
 import tokenRouter from "./routes/token"
 import requestRouter from "./routes/request"
+import { MikroORM } from "@mikro-orm/postgresql"
 
-const app = new koa()
-const router = new Router()
+export interface MyContext {
+  orm: MikroORM
+}
+
+const app = new koa<{}, MyContext>()
+const router = new Router<{}, MyContext>()
+
+app.use(async (ctx, next) => {
+  // Add orm to context. Do this in middleware to enable await
+  ctx.orm = await orm
+  await next()
+})
 
 app.use(koaBody())
 
