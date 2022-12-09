@@ -10,7 +10,7 @@ export default class User {
   password!: string
 
   constructor(password: string) {
-    this.password = bcrypt.hashSync(password, 10) // IMPROVE: use async
+    this.password = password
   }
 
   static async hash(password: string): Promise<string> {

@@ -5,13 +5,14 @@ import { StatusCode } from "status-code-enum"
 import User from "../model/User.js"
 
 export const retrieveToken = (ctx: Context): string | null => {
-  if (ctx.headers.authorization) {
-    const [type, token] = ctx.headers.authorization.split(" ")
-    if (type === "Bearer") {
-      return token
-    } else {
-      throw new Error("Invalid authorization header")
+  if (ctx.headers.authentication) {
+    if (typeof ctx.headers.authentication === "string") {
+      const [type, token] = ctx.headers.authentication.split(" ")
+      if (type === "Bearer") {
+        return token
+      }
     }
+    throw new Error("Invalid authorization header")
   } else {
     const possibletoken = ctx.cookies.get("token")
     if (possibletoken != null) {
@@ -25,26 +26,33 @@ export const retrieveToken = (ctx: Context): string | null => {
 const router = new Router<{}, MyContext>()
 
 router.post("/", async ctx => {
-  const token = retrieveToken(ctx)
+  try {
+    const token = retrieveToken(ctx)
 
-  if (token == null) {
-    ctx.status = StatusCode.ClientErrorBadRequest
-    ctx.body = "Bad request. No token provided."
-  } else {
-    const hash = await User.hash(token)
-
-    const userCount = await ctx.orm.count(User, { password: hash })
-    const userExists = userCount === 1
-    if (userExists) {
-      ctx.cookies.set("token", token, {
-        httpOnly: true,
-        sameSite: "strict",
-        secure: true,
-      })
-      ctx.status = StatusCode.SuccessCreated
+    if (token == null) {
+      ctx.status = StatusCode.ClientErrorBadRequest
+      ctx.body = "Bad request. No token provided."
     } else {
-      ctx.status = StatusCode.ClientErrorUnauthorized
-      ctx.body = "Unauthorized"
+      const userCount = await ctx.orm.count(User, { password: token })
+      const userExists = userCount === 1
+      if (userExists) {
+        ctx.cookies.set("token", token, {
+          httpOnly: true,
+          sameSite: "strict",
+          secure: true,
+        })
+        ctx.status = StatusCode.SuccessCreated
+      } else {
+        ctx.status = StatusCode.ClientErrorUnauthorized
+        ctx.body = "Unauthorized"
+      }
+    }
+  } catch (e) {
+    if (e instanceof Error) {
+      ctx.body = e.message
+      ctx.status = StatusCode.ClientErrorBadRequest
+    } else {
+      throw e
     }
   }
 })
