@@ -24,7 +24,7 @@ app.use(async (ctx, next) => {
 app.use(
   koaLogger({
     transporter(str, args) {
-      logger.info(args, stripAnsi(str))
+      logger.info({}, stripAnsi(str))
     },
   }),
 )
