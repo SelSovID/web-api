@@ -22,6 +22,10 @@ const config: Options<PostgreSqlDriver> = {
     pathTs: "src/migrations",
     disableForeignKeys: false,
   },
+  seeder: {
+    path: "./src/seeders", // path to the folder with seeders
+    emit: "ts", // seeder generation mode
+  },
   logger: msg => logger.trace({ mikroOrm: msg }, "micro-orm"),
 }
 
