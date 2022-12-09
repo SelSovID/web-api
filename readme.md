@@ -26,3 +26,13 @@ $ npm start
 
 You should now have a running server. Depending on the log level you chose in
 `.env` you will see output.
+
+## Testing
+
+A test user with the password `testpassword` can be created by running
+
+```
+$ npm run orm seeder:run
+```
+
+This command will run the seeder and seed the database with dummy data.
