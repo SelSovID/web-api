@@ -2,15 +2,18 @@ import koa from "koa"
 import { createServer } from "http"
 import koaBody from "koa-body"
 import Router from "koa-router"
+import tokenRouter from "./routes/token"
+import requestRouter from "./routes/request"
 
 const app = new koa()
 const router = new Router()
 
 app.use(koaBody())
 
-app.use(async ctx => {
-  ctx.body = "Hello World"
-})
+router.use("/token", tokenRouter.routes())
+router.use("/request", requestRouter.routes())
+
+app.use(router.routes())
 
 const server = createServer(app.callback())
 
