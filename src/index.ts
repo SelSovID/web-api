@@ -14,7 +14,7 @@ export interface MyContext {
 }
 
 const app = new koa<{}, MyContext>()
-const router = new Router<{}, MyContext>()
+
 app.use(async (ctx, next) => {
   // Add orm to context. Do this in middleware to enable await
   ctx.orm = (await orm).em
@@ -30,11 +30,13 @@ app.use(
 )
 
 app.use(koaBody())
-
+const router = new Router<{}, MyContext>()
 router.use("/token", tokenRouter.routes())
 router.use("/request", requestRouter.routes())
 
-app.use(router.routes())
+const prefixRouter = new Router<{}, MyContext>()
+prefixRouter.use("/api", router.routes())
+app.use(prefixRouter.routes())
 
 const server = createServer(app.callback())
 
