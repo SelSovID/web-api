@@ -4,6 +4,7 @@ import { PostgreSqlDriver } from "@mikro-orm/postgresql"
 import { TsMorphMetadataProvider } from "@mikro-orm/reflection"
 import logger from "./log.js"
 import User from "./model/User.js"
+import VCRequest from "./model/VCRequest.js"
 
 const dbConnctionString = process.env.DB_CONNECTION
 
@@ -15,7 +16,7 @@ if (!dbConnctionString) {
 const config: Options<PostgreSqlDriver> = {
   metadataProvider: TsMorphMetadataProvider,
   clientUrl: dbConnctionString,
-  entities: [User],
+  entities: [User, VCRequest],
   type: "postgresql",
   migrations: {
     path: "build/migrations",
