@@ -1,27 +1,18 @@
 import Router from "koa-router"
-import { MyContext } from "../index.js"
+import { MyContext, MyState } from "../index.js"
+import VCRequest from "../model/VCRequest.js"
 
-const router = new Router<{}, MyContext>()
+const router = new Router<MyState, MyContext>()
 
 router.get("/", async ctx => {
-  ctx.body = [
-    {
-      id: 1,
-      fromUser: {
-        email: "billybob@fmail.com",
-      },
-      date: Date.now(),
-      requestText: "Hallo ik ben billy bob en ik wil graag rijden",
-    },
-    {
-      id: 2,
-      fromUser: {
-        email: "ShawnTheSheep@godmail.com",
-      },
-      date: Date.now(),
-      requestText: "heel veel geld",
-    },
-  ]
+  const requests = await ctx.orm.find(VCRequest, { forUser: ctx.state.user })
+
+  ctx.body = requests.map(request => ({
+    ...request,
+    fromUser: { email: request.fromEmail },
+    fromEmail: undefined,
+  }))
+  ctx.status = 200
 })
 
 router.post("/", async ctx => {

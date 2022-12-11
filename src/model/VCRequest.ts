@@ -17,4 +17,10 @@ export default class VCRequest {
 
   @Property()
   createdAt = new Date()
+
+  constructor(fromEmail: string, text: string, forUser: User | null = null) {
+    this.fromEmail = fromEmail
+    this.text = text
+    this.forUser = forUser!
+  }
 }
