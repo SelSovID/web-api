@@ -70,6 +70,15 @@
           "nullable": false,
           "mappedType": "integer"
         },
+        "for_user_id": {
+          "name": "for_user_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
         "from_email": {
           "name": "from_email",
           "type": "varchar(255)",
@@ -113,7 +122,20 @@
         }
       ],
       "checks": [],
-      "foreignKeys": {}
+      "foreignKeys": {
+        "vcrequest_for_user_id_foreign": {
+          "constraintName": "vcrequest_for_user_id_foreign",
+          "columnNames": [
+            "for_user_id"
+          ],
+          "localTableName": "public.vcrequest",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.user",
+          "updateRule": "cascade"
+        }
+      }
     }
   ]
 }
