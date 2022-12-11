@@ -5,9 +5,9 @@ import { StatusCode } from "status-code-enum"
 import User from "../model/User.js"
 
 export const retrieveToken = (ctx: Context): string | null => {
-  if (ctx.headers.Authorization) {
-    if (typeof ctx.headers.Authorization === "string") {
-      const [type, token] = ctx.headers.Authorization.split(" ")
+  if (ctx.headers.authorization) {
+    if (typeof ctx.headers.authorization === "string") {
+      const [type, token] = ctx.headers.authorization.split(" ")
       if (type === "Bearer") {
         return token
       }
