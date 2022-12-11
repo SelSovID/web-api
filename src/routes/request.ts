@@ -10,7 +10,7 @@ router.get("/", async ctx => {
   ctx.body = requests.map(request => ({
     ...request,
     fromUser: { email: request.fromEmail },
-    fromEmail: undefined,
+    forUser: undefined,
   }))
   ctx.status = 200
 })
