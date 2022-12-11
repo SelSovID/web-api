@@ -7,6 +7,7 @@
     "start": "ts-node-esm src/index.ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "orm": "ts-node-esm node_modules/.bin/mikro-orm",
+    "seedDb": "npm run orm seeder:run",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
