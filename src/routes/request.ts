@@ -8,9 +8,12 @@ router.get("/", async ctx => {
   const requests = await ctx.orm.find(VCRequest, { forUser: ctx.state.user })
 
   ctx.body = requests.map(request => ({
-    ...request,
-    fromUser: { email: request.fromEmail },
-    forUser: undefined,
+    id: request.id,
+    fromUser: {
+      email: request.fromEmail,
+    },
+    date: request.createdAt,
+    requestText: request.text,
   }))
   ctx.status = 200
 })
