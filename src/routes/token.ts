@@ -1,6 +1,6 @@
 import { Context } from "koa"
 import Router from "koa-router"
-import { MyContext } from "../index.js"
+import { MyContext, MyState } from "../index.js"
 import { StatusCode } from "status-code-enum"
 import User from "../model/User.js"
 
@@ -23,7 +23,7 @@ export const retrieveToken = (ctx: Context): string | null => {
   }
 }
 
-const router = new Router<{}, MyContext>()
+const router = new Router<MyState, MyContext>()
 
 router.post("/", async ctx => {
   try {
