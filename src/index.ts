@@ -21,7 +21,7 @@ const app = new koa<{}, MyContext>()
 
 app.use(async (ctx, next) => {
   // Add orm to context. Do this in middleware to enable await
-  ctx.orm = (await orm).em
+  ctx.orm = (await orm).em.fork()
   await next()
 })
 
