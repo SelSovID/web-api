@@ -39,7 +39,7 @@ router.post("/", async ctx => {
         ctx.cookies.set("token", token, {
           httpOnly: true,
           sameSite: "strict",
-          secure: true,
+          secure: process.env.NODE_ENV === "production" ? true : false,
         })
         ctx.status = StatusCode.SuccessCreated
       } else {
