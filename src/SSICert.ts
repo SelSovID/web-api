@@ -29,12 +29,11 @@ export default class SSICert {
   }
 
   static async create(
-    parentCertificate: SSICert["parent"],
     ownerPublicKey: SSICert["publicKey"],
     credentialText: SSICert["credentialText"],
     ownerPrivateKey: KeyObject,
   ) {
-    const cert = new SSICert(parentCertificate, ownerPublicKey, credentialText, null, null)
+    const cert = new SSICert(null, ownerPublicKey, credentialText, null, null)
     await cert.signOwner(ownerPrivateKey)
     return cert
   }
@@ -46,7 +45,7 @@ export default class SSICert {
   export(): string {
     return JSON.stringify([
       { parent: this.parent?.export() ?? null },
-      { owner: this.publicKey.export() },
+      { publicKey: this.publicKey.export({ format: "pem", type: "pkcs1" }) },
       { credentialText: this.credentialText },
       { ownerSignature: this.ownerSignature?.toString("base64") ?? null },
       { parentSignature: this.parentSignature?.toString("base64") ?? null },
@@ -56,16 +55,16 @@ export default class SSICert {
   static import(serializedCertificate: string): SSICert {
     const [
       { parent: parentSerialized },
-      { owner: ownerSerialized },
+      { publicKey: publicKeySerialized },
       { credentialText },
       { ownerSignature: ownerSignatureSerialized },
       { parentSignature: parentSignatureSerialized },
     ] = JSON.parse(serializedCertificate)
     const parent = parentSerialized == null ? null : SSICert.import(parentSerialized)
-    const owner = crypto.createPublicKey(ownerSerialized)
+    const publicKey = crypto.createPublicKey(publicKeySerialized)
     const ownerSignature = ownerSignatureSerialized == null ? null : Buffer.from(ownerSignatureSerialized, "base64")
     const parentSignature = parentSignatureSerialized == null ? null : Buffer.from(parentSignatureSerialized, "base64")
-    return new SSICert(parent, owner, credentialText, ownerSignature, parentSignature)
+    return new SSICert(parent, publicKey, credentialText, ownerSignature, parentSignature)
   }
   private async signOwner(ownerPrivateKey: KeyObject): Promise<void> {
     const textToSign = this.getOwnerSignableText()
@@ -131,8 +130,7 @@ export default class SSICert {
 
   private getOwnerSignableText(): string {
     return JSON.stringify([
-      { parent: this.parent?.export() ?? null },
-      { ownerPublicKey: this.publicKey.export() },
+      { ownerPublicKey: this.publicKey.export({ format: "pem", type: "pkcs1" }) },
       { credentialText: this.credentialText },
     ])
   }
@@ -143,7 +141,7 @@ export default class SSICert {
     }
     return JSON.stringify([
       { parent: this.parent?.export() ?? null },
-      { owner: this.publicKey.export() },
+      { owner: this.publicKey.export({ format: "pem", type: "pkcs1" }) },
       { credentialText: this.credentialText },
       { ownerSignature: this.ownerSignature.toString("base64") },
     ])
