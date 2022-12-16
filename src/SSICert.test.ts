@@ -40,5 +40,5 @@ test("exportImport", async t => {
   const exported = cert.export()
   const imported = SSICert.import(exported)
 
-  t.deepEqual(imported, cert)
+  t.true(cert.equals(imported))
 })
