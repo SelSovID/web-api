@@ -31,7 +31,7 @@ router.get("/", async ctx => {
 })
 
 router.post("/", async ctx => {
-  ctx.body = "Hello World"
+  ctx.body = { message: "Hello World" }
 })
 
 router.get("/:id", async ctx => {
@@ -43,11 +43,11 @@ router.get("/:id", async ctx => {
       ctx.status = 200
     } else {
       ctx.status = 404
-      ctx.body = "Request not found"
+      ctx.body = { error: "Request not found" }
     }
   } else {
     ctx.status = 400
-    ctx.body = "Invalid request id"
+    ctx.body = { error: "Invalid request id" }
   }
 })
 
@@ -66,11 +66,11 @@ router.put("/:id", async ctx => {
       ctx.status = 200 // Fake succes
     } else {
       ctx.status = 404
-      ctx.body = "VCRequest not found"
+      ctx.body = { error: "VCRequest not found" }
     }
   } else {
     ctx.status = 400
-    ctx.body = "Bad request"
+    ctx.body = { error: "Bad request" }
   }
 })
 

@@ -31,7 +31,7 @@ router.post("/", async ctx => {
 
     if (token == null) {
       ctx.status = StatusCode.ClientErrorBadRequest
-      ctx.body = "Bad request. No token provided."
+      ctx.body = { error: "Bad request. No token provided." }
     } else {
       const userCount = await ctx.orm.count(User, { password: token })
       const userExists = userCount === 1
@@ -44,7 +44,7 @@ router.post("/", async ctx => {
         ctx.status = StatusCode.SuccessCreated
       } else {
         ctx.status = StatusCode.ClientErrorUnauthorized
-        ctx.body = "Unauthorized"
+        ctx.body = { error: "Unauthorized" }
       }
     }
   } catch (e) {
