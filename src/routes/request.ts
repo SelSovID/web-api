@@ -63,6 +63,7 @@ router.put("/:id", async ctx => {
     const request = await ctx.orm.findOne(VCRequest, { forUser: ctx.state.user, id: requestId })
     if (request != null) {
       // TODO: Implement
+      ctx.status = 200 // Fake succes
     } else {
       ctx.status = 404
       ctx.body = "VCRequest not found"
