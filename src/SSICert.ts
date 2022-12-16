@@ -102,6 +102,22 @@ export default class SSICert {
     return this.internalVerifyChain(knownRoots, [])
   }
 
+  equals(other: SSICert): boolean {
+    return (
+      this.isSelfSigned() === other.isSelfSigned() &&
+      //@ts-ignore
+      this.publicKey.equals(other.publicKey) &&
+      this.credentialText === other.credentialText &&
+      (this.ownerSignature == null
+        ? other.ownerSignature == null
+        : this.ownerSignature.equals(other.ownerSignature!)) &&
+      (this.parentSignature == null
+        ? other.parentSignature == null
+        : this.parentSignature.equals(other.parentSignature!)) &&
+      (this.parent == null ? other.parent == null : this.parent.equals(other.parent!))
+    )
+  }
+
   private internalVerifyChain(knownRoots: SSICert[], visitedCerts: SSICert[]): boolean {
     if (visitedCerts.some(cert => cert.ownerSignature!.equals(this.ownerSignature!))) {
       throw new Error("Certificate chain contains a loop")
