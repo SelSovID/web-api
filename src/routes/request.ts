@@ -1,5 +1,6 @@
 import Router from "koa-router"
 import { MyContext, MyState } from "../index.js"
+import logger from "../log.js"
 import VCRequest from "../model/VCRequest.js"
 
 type RequestDTO = {
@@ -50,8 +51,26 @@ router.get("/:id", async ctx => {
   }
 })
 
+type RequestUpdateDTO = {
+  accept: boolean
+}
+
 router.put("/:id", async ctx => {
-  ctx.body = "Hello World"
+  const requestId = parseInt(ctx.params.id)
+  const RequestUpdateDTO = ctx.request.body as RequestUpdateDTO
+  logger.debug({ requestId, RequestUpdateDTO }, "Got request update")
+  if (!isNaN(requestId) || RequestUpdateDTO?.accept == null) {
+    const request = await ctx.orm.findOne(VCRequest, { forUser: ctx.state.user, id: requestId })
+    if (request != null) {
+      // TODO: Implement
+    } else {
+      ctx.status = 404
+      ctx.body = "VCRequest not found"
+    }
+  } else {
+    ctx.status = 400
+    ctx.body = "Bad request"
+  }
 })
 
 export default router
