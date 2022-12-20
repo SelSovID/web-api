@@ -8,7 +8,8 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "orm": "ts-node-esm node_modules/.bin/mikro-orm",
     "fresh-db": "npm run orm migration:fresh && npm run orm seeder:run",
-    "test": "ava src/**/*.test.ts"
+    "test": "ava src/**/*.test.ts",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
