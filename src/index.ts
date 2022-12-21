@@ -19,6 +19,8 @@ export interface MyState {
 
 const app = new koa<{}, MyContext>()
 
+app.proxy = process.env.NODE_ENV === "production"
+
 app.use(async (ctx, next) => {
   // Add orm to context. Do this in middleware to enable await
   ctx.orm = (await orm).em.fork()
