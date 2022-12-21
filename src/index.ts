@@ -27,11 +27,6 @@ app.use(async (ctx, next) => {
   await next()
 })
 
-app.use(async (ctx, next) => {
-  logger.debug(`proxy: ${ctx.app.proxy}. secure: ${ctx.secure}, headers: ${JSON.stringify(ctx.req.headers)}`)
-  await next()
-})
-
 app.use(
   koaLogger({
     transporter(str, args) {
