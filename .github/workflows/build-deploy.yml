@@ -26,9 +26,6 @@
 
 name: Build and Deploy container
 
-env:
-  AZURE_WEBAPP_NAME: self-sovereign-id
-
 on:
   push:
     branches: ["master"]
