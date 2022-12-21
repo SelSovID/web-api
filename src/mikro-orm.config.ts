@@ -11,8 +11,6 @@ const dbConnctionString = process.env.DB_CONNECTION
 if (!dbConnctionString) {
   console.error("No database connection string provided, exiting")
   process.exit(3)
-} else {
-  console.log(`dbSting: ${dbConnctionString}`)
 }
 
 const config: Options<PostgreSqlDriver> = {
