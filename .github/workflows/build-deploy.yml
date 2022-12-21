@@ -115,7 +115,7 @@ jobs:
           docker run -d \
               --restart=always \
               --network=${{ secrets.DOCKER_NETWORK }} \
-              -e DB_CONNECTION=${{ secrets.DB_CONNECTION }}
+              -e DB_CONNECTION=${{ secrets.DB_CONNECTION }} \
               --name ${{ env.container_name }} \
               ghcr.io/${{ env.REPO }}:${{ github.sha }} \
           '
