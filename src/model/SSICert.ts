@@ -1,7 +1,7 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core"
 import crypto, { KeyObject } from "node:crypto"
 import { promisify } from "node:util"
-import { KeyObjectDB } from "../util/KeyObjectDB.js"
+import { PublicKeyObject } from "../util/KeyObjectDB.js"
 
 const sign = promisify(crypto.sign)
 
@@ -15,7 +15,7 @@ export default class SSICert {
   @ManyToOne()
   parent: SSICert | null
 
-  @Property({ type: KeyObjectDB })
+  @Property({ type: PublicKeyObject })
   publicKey: KeyObject
 
   @Property()

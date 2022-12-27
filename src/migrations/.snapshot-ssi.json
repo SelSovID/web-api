@@ -113,21 +113,21 @@
         },
         "private_key": {
           "name": "private_key",
-          "type": "text",
+          "type": "bytea",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "mappedType": "text"
+          "mappedType": "blob"
         },
         "public_key": {
           "name": "public_key",
-          "type": "text",
+          "type": "bytea",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "mappedType": "text"
+          "mappedType": "blob"
         }
       },
       "name": "user",
