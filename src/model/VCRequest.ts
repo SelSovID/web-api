@@ -1,4 +1,6 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core"
+import { DateTime } from "luxon"
+import LuxonDate from "../util/luxonDate.js"
 import User from "./User.js"
 
 @Entity()
@@ -15,8 +17,8 @@ export default class VCRequest {
   @Property()
   text!: string
 
-  @Property()
-  createdAt = new Date()
+  @Property({ type: LuxonDate })
+  createdAt = DateTime.now()
 
   constructor(fromEmail: string, text: string, forUser: User | null = null) {
     this.fromEmail = fromEmail
