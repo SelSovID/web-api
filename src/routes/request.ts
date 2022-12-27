@@ -17,7 +17,7 @@ const mapRequestToDTO = (request: VCRequest): RequestDTO => ({
   fromUser: {
     email: request.fromEmail,
   },
-  date: request.createdAt.getTime(),
+  date: request.createdAt.toMillis(),
   requestText: request.text,
 })
 
