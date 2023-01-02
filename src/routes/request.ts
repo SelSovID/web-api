@@ -2,6 +2,7 @@ import Router from "koa-router"
 import { MyContext, MyState } from "../index.js"
 import logger from "../log.js"
 import SSICert from "../model/SSICert.js"
+import User from "../model/User.js"
 import VCRequest from "../model/VCRequest.js"
 
 type RequestDTO = {
@@ -11,7 +12,7 @@ type RequestDTO = {
   }
   date: number
   requestText: string
-  attachedVCs: SSICert[]
+  attachedVCs: string[]
 }
 
 const mapRequestToDTO = (request: VCRequest): RequestDTO => ({
@@ -21,7 +22,7 @@ const mapRequestToDTO = (request: VCRequest): RequestDTO => ({
   },
   date: request.createdAt.toMillis(),
   requestText: request.text,
-  attachedVCs: request.attachedVCs.getItems(),
+  attachedVCs: request.attachedVCs.getItems().map(vc => vc.export()),
 })
 
 const router = new Router<MyState, MyContext>()
@@ -33,8 +34,29 @@ router.get("/", async ctx => {
   ctx.status = 200
 })
 
+type CreateRequestDTO = {
+  requestText: string
+  attachedVCs: string[]
+  holderEmail: string
+  issuerId: number
+}
+
 router.post("/", async ctx => {
-  ctx.body = { message: "Hello World" }
+  const data = ctx.request.body as CreateRequestDTO
+  logger.trace({ data }, "Got request creation request")
+  if (data?.requestText != null && data?.attachedVCs != null && data?.holderEmail != null) {
+    const vcRequest = new VCRequest(
+      data.holderEmail,
+      data.requestText,
+      ctx.orm.getReference(User, data.issuerId),
+      data.attachedVCs.map(vc => SSICert.import(vc)),
+    )
+    ctx.orm.persist(vcRequest)
+    ctx.status = 201
+  } else {
+    ctx.status = 400
+    ctx.body = { error: "Bad request" }
+  }
 })
 
 router.get("/:id", async ctx => {
