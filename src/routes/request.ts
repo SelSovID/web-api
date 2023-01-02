@@ -1,6 +1,7 @@
 import Router from "koa-router"
 import { MyContext, MyState } from "../index.js"
 import logger from "../log.js"
+import SSICert from "../model/SSICert.js"
 import VCRequest from "../model/VCRequest.js"
 
 type RequestDTO = {
@@ -10,6 +11,7 @@ type RequestDTO = {
   }
   date: number
   requestText: string
+  attachedVCs: SSICert[]
 }
 
 const mapRequestToDTO = (request: VCRequest): RequestDTO => ({
@@ -19,6 +21,7 @@ const mapRequestToDTO = (request: VCRequest): RequestDTO => ({
   },
   date: request.createdAt.toMillis(),
   requestText: request.text,
+  attachedVCs: request.attachedVCs.getItems(),
 })
 
 const router = new Router<MyState, MyContext>()
@@ -37,7 +40,11 @@ router.post("/", async ctx => {
 router.get("/:id", async ctx => {
   const requestId = parseInt(ctx.params.id)
   if (!isNaN(requestId)) {
-    const request = await ctx.orm.findOne(VCRequest, { forUser: ctx.state.user, id: requestId })
+    const request = await ctx.orm.findOne(
+      VCRequest,
+      { forUser: ctx.state.user, id: requestId },
+      { populate: ["attachedVCs"] },
+    )
     if (request != null) {
       ctx.body = mapRequestToDTO(request)
       ctx.status = 200
