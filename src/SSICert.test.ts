@@ -1,5 +1,5 @@
 import test from "ava"
-import SSICert from "./SSICert.js"
+import SSICert from "./model/SSICert.js"
 import crypto from "node:crypto"
 
 const { publicKey: pu1, privateKey: pr1 } = crypto.generateKeyPairSync("rsa", {
