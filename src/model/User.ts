@@ -1,4 +1,4 @@
-import { Entity, PrimaryKey, Property, Type } from "@mikro-orm/core"
+import { Entity, PrimaryKey, Property } from "@mikro-orm/core"
 import bcrypt from "bcrypt"
 import crypto, { KeyObject } from "node:crypto"
 import { promisify } from "node:util"
