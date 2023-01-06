@@ -1,4 +1,4 @@
-import websocket from "koa-easy-ws"
+import websocket from "@mees-/koa-easy-ws-esm"
 import Router from "koa-router"
 import { WebSocket } from "ws"
 import { MyState, MyContext } from "../index.js"
