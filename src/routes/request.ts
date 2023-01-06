@@ -86,12 +86,17 @@ type RequestUpdateDTO = {
 
 router.put("/:id", async ctx => {
   const requestId = parseInt(ctx.params.id)
-  const RequestUpdateDTO = ctx.request.body as RequestUpdateDTO
+  const RequestUpdateDTO = ctx.request.body as RequestUpdateDTO | undefined
   logger.debug({ requestId, RequestUpdateDTO }, "Got request update")
-  if (!isNaN(requestId) || RequestUpdateDTO?.accept == null) {
+  if (!isNaN(requestId) && RequestUpdateDTO != null) {
     const request = await ctx.orm.findOne(VCRequest, { forUser: ctx.state.user, id: requestId })
     if (request != null) {
-      // TODO: Implement
+      if (RequestUpdateDTO.accept) {
+        request.accepted = true
+        ctx.orm.persist(request)
+      } else {
+        ctx.orm.remove(request)
+      }
       ctx.status = 200 // Fake succes
     } else {
       ctx.status = 404

@@ -18,6 +18,9 @@ export default class VCRequest {
   @Property()
   text!: string
 
+  @Property({ default: false })
+  accepted: boolean = false
+
   @Property({ type: LuxonDate })
   createdAt = DateTime.now()
 
