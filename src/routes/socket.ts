@@ -2,6 +2,7 @@ import websocket from "koa-easy-ws"
 import Router from "koa-router"
 import { WebSocket } from "ws"
 import { MyState, MyContext } from "../index.js"
+import logger from "../log.js"
 
 const router = new Router<MyState, MyContext>()
 
@@ -30,11 +31,18 @@ router.use(async (ctx, next) => {
           sock.close()
         }
         delete channelListeners[channel]
-      } else {
+      } else if (type === "message") {
         for (const sock of channelListeners[channel]) {
-          sock.send(JSON.stringify({ type: "message", payload }))
+          if (sock !== ws) {
+            sock.send(JSON.stringify({ type: "message", payload }))
+          }
         }
+      } else {
+        logger.error({ data }, "unknown ws message type")
+        ws.send(JSON.stringify({ type: "error", payload: "unknown message type" }))
       }
     })
+  } else {
+    await next()
   }
 })
