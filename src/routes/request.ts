@@ -34,31 +34,6 @@ router.get("/", async ctx => {
   ctx.status = 200
 })
 
-type CreateRequestDTO = {
-  requestText: string
-  attachedVCs: string[]
-  holderEmail: string
-  issuerId: number
-}
-
-router.post("/", async ctx => {
-  const data = ctx.request.body as CreateRequestDTO
-  logger.trace({ data }, "Got request creation request")
-  if (data?.requestText != null && data?.attachedVCs != null && data?.holderEmail != null) {
-    const vcRequest = new VCRequest(
-      data.holderEmail,
-      data.requestText,
-      ctx.orm.getReference(User, data.issuerId),
-      data.attachedVCs.map(vc => SSICert.import(vc)),
-    )
-    ctx.orm.persist(vcRequest)
-    ctx.status = 201
-  } else {
-    ctx.status = 400
-    ctx.body = { error: "Bad request" }
-  }
-})
-
 router.get("/:id", async ctx => {
   const requestId = parseInt(ctx.params.id)
   if (!isNaN(requestId)) {
