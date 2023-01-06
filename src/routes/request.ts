@@ -82,6 +82,7 @@ router.get("/:id", async ctx => {
 
 type RequestUpdateDTO = {
   accept: boolean
+  reason?: string
 }
 
 router.put("/:id", async ctx => {
@@ -91,12 +92,11 @@ router.put("/:id", async ctx => {
   if (!isNaN(requestId) && RequestUpdateDTO != null) {
     const request = await ctx.orm.findOne(VCRequest, { forUser: ctx.state.user, id: requestId })
     if (request != null) {
-      if (RequestUpdateDTO.accept) {
-        request.accepted = true
-        ctx.orm.persist(request)
-      } else {
-        ctx.orm.remove(request)
+      request.accepted = RequestUpdateDTO.accept
+      if (!RequestUpdateDTO.accept) {
+        request.denyReason = RequestUpdateDTO.reason
       }
+      ctx.orm.persist(request)
       ctx.status = 200 // Fake succes
     } else {
       ctx.status = 404
