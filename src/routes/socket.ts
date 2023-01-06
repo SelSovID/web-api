@@ -46,3 +46,5 @@ router.use(async (ctx, next) => {
     await next()
   }
 })
+
+export default router
