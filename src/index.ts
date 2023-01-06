@@ -10,13 +10,14 @@ import logger from "./log.js"
 import koaLogger from "koa-logger"
 import stripAnsi from "strip-ansi"
 import User from "./model/User.js"
+import { WebSocket } from "ws"
 export interface MyContext {
   orm: EntityManager
+  ws?: Promise<WebSocket>
 }
 export interface MyState {
   user: User
 }
-
 const app = new koa<{}, MyContext>()
 
 app.proxy = process.env.NODE_ENV === "production"
