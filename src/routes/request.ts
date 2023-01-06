@@ -5,23 +5,30 @@ import SSICert from "../model/SSICert.js"
 import User from "../model/User.js"
 import VCRequest from "../model/VCRequest.js"
 
-type RequestDTO = {
+type RequestsDTO = {
   id: number
   fromUser: {
     email: string
   }
   date: number
   requestText: string
+}
+
+type RequestDetailsDTO = RequestsDTO & {
   attachedVCs: string[]
 }
 
-const mapRequestToDTO = (request: VCRequest): RequestDTO => ({
+const mapRequestToDTO = (request: VCRequest): RequestsDTO => ({
   id: request.id,
   fromUser: {
     email: request.fromEmail,
   },
   date: request.createdAt.toMillis(),
   requestText: request.text,
+})
+
+const mapRequestDetailsToDTO = (request: VCRequest): RequestDetailsDTO => ({
+  ...mapRequestToDTO(request),
   attachedVCs: request.attachedVCs.getItems().map(vc => vc.export()),
 })
 
@@ -43,7 +50,7 @@ router.get("/:id", async ctx => {
       { populate: ["attachedVCs"] },
     )
     if (request != null) {
-      ctx.body = mapRequestToDTO(request)
+      ctx.body = mapRequestDetailsToDTO(request)
       ctx.status = 200
     } else {
       ctx.status = 404
