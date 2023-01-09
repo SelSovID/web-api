@@ -1,26 +1,23 @@
-import koa from "koa"
+import Koa from "koa"
 import { createServer } from "http"
 import { koaBody } from "koa-body"
 import Router from "koa-router"
 import orm from "./orm.js"
 import tokenRouter, { retrieveToken } from "./routes/token.js"
 import requestRouter from "./routes/request.js"
-import wsRouter from "./routes/socket.js"
 import holderRouter from "./routes/holder.js"
 import { EntityManager } from "@mikro-orm/postgresql"
 import logger from "./log.js"
 import koaLogger from "koa-logger"
 import stripAnsi from "strip-ansi"
 import User from "./model/User.js"
-import { WebSocket } from "ws"
-export interface MyContext {
+export interface MyContext extends Koa.Context {
   orm: EntityManager
-  ws?: Promise<WebSocket>
 }
 export interface MyState {
   user: User
 }
-const app = new koa<{}, MyContext>()
+const app = new Koa<{}, MyContext>()
 
 app.proxy = process.env.NODE_ENV === "production"
 
@@ -37,11 +34,9 @@ app.use(
     },
   }),
 )
-
 app.use(koaBody())
 const router = new Router<MyState, MyContext>()
 router.use("/token", tokenRouter.routes())
-router.use("/ws", wsRouter.routes())
 router.use("/holder", holderRouter.routes())
 router.use(async (ctx, next) => {
   const token = retrieveToken(ctx)
