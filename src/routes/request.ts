@@ -1,8 +1,6 @@
 import Router from "koa-router"
 import { MyContext, MyState } from "../index.js"
 import logger from "../log.js"
-import SSICert from "../model/SSICert.js"
-import User from "../model/User.js"
 import VCRequest from "../model/VCRequest.js"
 
 type RequestsDTO = {

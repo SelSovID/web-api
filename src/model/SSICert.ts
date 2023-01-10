@@ -70,18 +70,26 @@ export default class SSICert {
   }
 
   static import(serializedCertificate: string): SSICert {
-    const [
-      { parent: parentSerialized },
-      { publicKey: publicKeySerialized },
-      { credentialText },
-      { ownerSignature: ownerSignatureSerialized },
-      { parentSignature: parentSignatureSerialized },
-    ] = JSON.parse(serializedCertificate)
-    const parent = parentSerialized == null ? null : SSICert.import(parentSerialized)
-    const publicKey = crypto.createPublicKey(publicKeySerialized)
-    const ownerSignature = ownerSignatureSerialized == null ? null : Buffer.from(ownerSignatureSerialized, "base64")
-    const parentSignature = parentSignatureSerialized == null ? null : Buffer.from(parentSignatureSerialized, "base64")
-    return new SSICert(parent, publicKey, credentialText, ownerSignature, parentSignature)
+    try {
+      const [
+        { parent: parentSerialized },
+        { publicKey: publicKeySerialized },
+        { credentialText },
+        { ownerSignature: ownerSignatureSerialized },
+        { parentSignature: parentSignatureSerialized },
+      ] = JSON.parse(serializedCertificate)
+      if (publicKeySerialized == null || credentialText == null) {
+        throw new Error("Missing required fields")
+      }
+      const parent = parentSerialized == null ? null : SSICert.import(parentSerialized)
+      const publicKey = crypto.createPublicKey(publicKeySerialized)
+      const ownerSignature = ownerSignatureSerialized == null ? null : Buffer.from(ownerSignatureSerialized, "base64")
+      const parentSignature =
+        parentSignatureSerialized == null ? null : Buffer.from(parentSignatureSerialized, "base64")
+      return new SSICert(parent, publicKey, credentialText, ownerSignature, parentSignature)
+    } catch (e) {
+      throw new Error(`Cannot import certificate: ${e}`)
+    }
   }
   private async signOwner(ownerPrivateKey: KeyObject): Promise<void> {
     const textToSign = this.getOwnerSignableText()
