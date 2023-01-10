@@ -6,9 +6,10 @@ const router = new Router<MyState, MyContext>()
 
 type IssuerDTO = {
   id: number
+  name: string
 }
 
-const mapIssuerToDTO = (issuer: User): IssuerDTO => ({ id: issuer.id })
+const mapIssuerToDTO = (issuer: User): IssuerDTO => ({ id: issuer.id, name: issuer.name })
 
 router.get("/", async ctx => {
   const issuers = await ctx.orm.find(User, {})

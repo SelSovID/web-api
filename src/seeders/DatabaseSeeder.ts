@@ -11,13 +11,13 @@ import { promisify } from "node:util"
 export class DatabaseSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
     if (process.env.TEST_PASSWORD != null) {
-      const testUser = em.create(User, await User.create(process.env.TEST_PASSWORD))
+      const testUser = em.create(User, await User.create("Test issuer", process.env.TEST_PASSWORD))
       const reqs = await make(createVCRequest.bind(null, testUser), 10)
       em.persist(reqs)
     }
 
     for (let i = 0; i < 10; i++) {
-      const user = em.create(User, await User.create(faker.internet.password()))
+      const user = em.create(User, await User.create(faker.name.jobArea(), faker.internet.password()))
       const reqs = await make(createVCRequest.bind(null, user), 10)
       em.persist(reqs)
     }

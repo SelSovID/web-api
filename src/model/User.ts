@@ -10,6 +10,9 @@ export default class User {
   id!: number
 
   @Property()
+  name!: string
+
+  @Property()
   password!: string
 
   @Property({ type: PrivateKeyObject })
@@ -18,7 +21,7 @@ export default class User {
   @Property({ type: PublicKeyObject })
   publicKey!: KeyObject
 
-  static async create(password: string): Promise<User> {
+  static async create(name: string, password: string): Promise<User> {
     const user = new User()
     user.password = password
     const pair = await promisify(crypto.generateKeyPair)("rsa", {
