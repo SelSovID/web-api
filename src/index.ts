@@ -6,6 +6,7 @@ import orm from "./orm.js"
 import tokenRouter, { retrieveToken } from "./routes/token.js"
 import requestRouter from "./routes/request.js"
 import holderRouter from "./routes/holder.js"
+import issuerRouter from "./routes/issuer.js"
 import { EntityManager } from "@mikro-orm/postgresql"
 import logger from "./log.js"
 import koaLogger from "koa-logger"
@@ -38,6 +39,7 @@ app.use(koaBody())
 const router = new Router<MyState, MyContext>()
 router.use("/token", tokenRouter.routes())
 router.use("/holder", holderRouter.routes())
+router.use("/issuer", issuerRouter.routes())
 router.use(async (ctx, next) => {
   const token = retrieveToken(ctx)
   const user = await ctx.orm.findOne(User, { password: token })
