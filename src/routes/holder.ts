@@ -18,14 +18,20 @@ router.post("/request", async ctx => {
   const data = ctx.request.body as CreateRequestDTO
   logger.trace({ data }, "Got request creation request")
   if (data?.requestText != null && data?.attachedVCs != null && data?.holderEmail != null) {
-    const vcRequest = new VCRequest(
-      data.holderEmail,
-      data.requestText,
-      ctx.orm.getReference(User, data.issuerId),
-      data.attachedVCs.map(vc => SSICert.import(vc)),
-    )
-    ctx.orm.persist(vcRequest)
-    ctx.status = 201
+    try {
+      const vcRequest = new VCRequest(
+        data.holderEmail,
+        data.requestText,
+        ctx.orm.getReference(User, data.issuerId),
+        data.attachedVCs.map(vc => SSICert.import(vc)),
+      )
+      ctx.orm.persist(vcRequest)
+      ctx.status = 201
+    } catch (e) {
+      logger.error(e, "Error while creating request")
+      ctx.status = 400
+      ctx.body = { error: "Bad request" }
+    }
   } else {
     ctx.status = 400
     ctx.body = { error: "Bad request" }
