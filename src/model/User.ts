@@ -23,6 +23,7 @@ export default class User {
 
   static async create(name: string, password: string): Promise<User> {
     const user = new User()
+    user.name = name
     user.password = password
     const pair = await promisify(crypto.generateKeyPair)("rsa", {
       modulusLength: 4096,
