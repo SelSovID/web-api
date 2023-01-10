@@ -35,7 +35,7 @@ const mapRequestDetailsToDTO = (request: VCRequest): RequestDetailsDTO => ({
 const router = new Router<MyState, MyContext>()
 
 router.get("/", async ctx => {
-  const requests = await ctx.orm.find(VCRequest, { forUser: ctx.state.user })
+  const requests = await ctx.orm.find(VCRequest, { forUser: ctx.state.user, accepted: null })
 
   ctx.body = requests.map(mapRequestToDTO)
   ctx.status = 200
