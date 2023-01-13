@@ -4,6 +4,13 @@ import logger from "../log.js"
 import SSICert from "../model/SSICert.js"
 import User from "../model/User.js"
 import VCRequest from "../model/VCRequest.js"
+import { readFileSync } from "fs"
+
+const ROOT_CERT_PATH = process.env.ROOT_CERT_PATH
+if (ROOT_CERT_PATH == null) {
+  throw new Error("ROOT_CERT_PATH not set")
+}
+const rootCert = SSICert.import(readFileSync(ROOT_CERT_PATH, "utf-8"))
 
 const router = new Router<MyState, MyContext>()
 
@@ -27,6 +34,13 @@ router.post("/request", async ctx => {
           ctx.orm.getReference(User, data.issuerId),
           data.attachedVCs.map(vc => SSICert.import(vc)),
         )
+        for (const cert of vcRequest.attachedVCs) {
+          if (!cert.verifyChain([rootCert])) {
+            ctx.status = 404
+            ctx.body = { error: "One of your provided verifiable credentials wasn't signed by a recognized root" }
+            return
+          }
+        }
         ctx.orm.persist(vcRequest)
         ctx.status = 201
       } else {
