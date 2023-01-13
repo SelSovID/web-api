@@ -6,6 +6,14 @@ import { PublicKeyObject } from "../util/KeyObjectDB.js"
 
 const sign = promisify(crypto.sign)
 
+export type SSICertJSON = [
+  { parent: string | null },
+  { publicKey: string },
+  { credentialText: string },
+  { ownerSignature: string | null },
+  { parentSignature: string | null },
+]
+
 @Entity()
 export default class SSICert {
   static HASH_ALGORITHM = "sha256"
@@ -22,7 +30,7 @@ export default class SSICert {
   @Property({ type: PublicKeyObject })
   publicKey: KeyObject
 
-  @Property()
+  @Property({ type: "text" })
   credentialText: string
 
   @Property({ type: "bytea" })
@@ -77,7 +85,7 @@ export default class SSICert {
         { credentialText },
         { ownerSignature: ownerSignatureSerialized },
         { parentSignature: parentSignatureSerialized },
-      ] = JSON.parse(serializedCertificate)
+      ] = JSON.parse(serializedCertificate) as SSICertJSON
       if (publicKeySerialized == null || credentialText == null) {
         throw new Error("Missing required fields")
       }

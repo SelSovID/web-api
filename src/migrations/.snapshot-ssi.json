@@ -204,12 +204,12 @@
         },
         "credential_text": {
           "name": "credential_text",
-          "type": "varchar(255)",
+          "type": "text",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "mappedType": "string"
+          "mappedType": "text"
         },
         "owner_signature": {
           "name": "owner_signature",
