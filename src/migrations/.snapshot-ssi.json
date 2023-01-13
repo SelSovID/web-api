@@ -112,8 +112,8 @@
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": false,
-          "default": "false",
+          "nullable": true,
+          "default": "null",
           "mappedType": "boolean"
         },
         "deny_reason": {

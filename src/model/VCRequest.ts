@@ -18,8 +18,8 @@ export default class VCRequest {
   @Property({ type: "text" })
   text!: string
 
-  @Property({ default: false })
-  accepted: boolean = false
+  @Property({ default: null })
+  accepted: boolean | null = null
 
   @Property({ type: "text" })
   denyReason?: string
