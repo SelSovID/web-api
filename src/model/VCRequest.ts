@@ -15,7 +15,7 @@ export default class VCRequest {
   @Property()
   fromEmail!: string
 
-  @Property()
+  @Property({ type: "text" })
   text!: string
 
   @Property({ default: false })

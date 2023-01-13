@@ -28,7 +28,12 @@ const make = <T>(factory: () => Promise<T> | T, amount: number = 1): Promise<T[]
   Promise.all(new Array(amount).fill(null).map(factory))
 
 async function createVCRequest(user: User): Promise<VCRequest> {
-  return new VCRequest(faker.internet.email(), faker.lorem.sentence(), user, await make(createSSICert, 3))
+  return new VCRequest(
+    faker.internet.email(),
+    `${faker.lorem.words(2)}\n\n${faker.lorem.paragraph()}`,
+    user,
+    await make(createSSICert, 3),
+  )
 }
 
 /**
