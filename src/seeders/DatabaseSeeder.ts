@@ -41,5 +41,5 @@ async function createSSICert(): Promise<SSICert> {
     modulusLength: 2048,
     publicExponent: 0x10001,
   })
-  return SSICert.create(publicKey, faker.lorem.sentence(), privateKey)
+  return SSICert.create(publicKey, `${faker.lorem.words(2)}\n\n${faker.lorem.paragraph()}`, privateKey)
 }
