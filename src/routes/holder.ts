@@ -27,22 +27,21 @@ logger.info("Got root cert")
 const router = new Router<MyState, MyContext>()
 
 type CreateRequestDTO = {
-  requestText: string
+  vc: string
   attachedVCs: string[]
-  fromUser: string
   issuerId: number
 }
 
 router.post("/request", async ctx => {
   const data = ctx.request.body as CreateRequestDTO
   logger.trace({ data }, "Got request creation request")
-  if (data?.requestText != null && data?.attachedVCs != null && data?.fromUser != null) {
+  if (data?.vc != null && data?.attachedVCs != null) {
     try {
       const issuerExists = (await ctx.orm.count(User, { id: data.issuerId })) === 1
       if (issuerExists) {
+        const vc = SSICert.import(data.vc)
         const vcRequest = new VCRequest(
-          data.fromUser,
-          data.requestText,
+          vc,
           ctx.orm.getReference(User, data.issuerId),
           data.attachedVCs.map(vc => SSICert.import(vc)),
         )
@@ -68,6 +67,30 @@ router.post("/request", async ctx => {
   } else {
     ctx.status = 400
     ctx.body = { error: "Bad request. Invalid body" }
+  }
+})
+
+type RequestRepsonseDTO = {
+  accept: boolean
+  vc: string | null
+}
+
+router.get("/request/:id", async ctx => {
+  const request = await ctx.orm.findOne(VCRequest, { retrievalId: ctx.params.id })
+  if (request) {
+    if (request.accepted != null) {
+      ctx.body = {
+        accept: request.accepted,
+        vc: request.accepted ? request.VC : null,
+      } as RequestRepsonseDTO
+
+      ctx.status = 200
+    } else {
+      ctx.status = 202
+    }
+  } else {
+    ctx.status = 404
+    ctx.body = { error: "Request not found" }
   }
 })
 
