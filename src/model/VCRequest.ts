@@ -14,16 +14,13 @@ export default class VCRequest {
   forUser!: User
 
   @Property()
-  fromEmail!: string
-
-  @Property({ type: "text" })
-  text!: string
-
-  @Property()
-  retrievalId: string = randomBytes(64).toString("base64")
+  retrievalId: string = randomBytes(64).toString("base64url")
 
   @Property({ default: null })
   accepted: boolean | null = null
+
+  @Property()
+  VC!: string
 
   @Property({ type: "text" })
   denyReason?: string
@@ -35,9 +32,8 @@ export default class VCRequest {
   @OneToMany({ mappedBy: (cert: SSICert) => cert.forRequest, cascade: [Cascade.ALL] })
   attachedVCs = new Collection<SSICert, this>(this)
 
-  constructor(fromEmail: string, text: string, forUser: User, attachedVCs: SSICert[] = []) {
-    this.fromEmail = fromEmail
-    this.text = text
+  constructor(vc: SSICert, forUser: User, attachedVCs: SSICert[] = []) {
+    this.VC = vc.export()
     this.forUser = forUser!
     this.attachedVCs = Collection.create(this, "attachedVCs", attachedVCs, false)
   }

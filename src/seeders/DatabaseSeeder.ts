@@ -61,8 +61,7 @@ async function createUser([cert, privateKey]: [SSICert, KeyObject]): Promise<Use
 
 async function createVCRequest(user: User): Promise<VCRequest> {
   return new VCRequest(
-    faker.internet.email(),
-    `${faker.lorem.words(2)}\n\n${faker.lorem.paragraph()}`,
+    (await createSSICert())[0],
     user,
     (await make(createSSICert, 3)).map(([cert]) => cert),
   )
