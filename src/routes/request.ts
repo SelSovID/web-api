@@ -1,13 +1,12 @@
 import Router from "koa-router"
 import { MyContext, MyState } from "../index.js"
 import logger from "../log.js"
+import SSICert from "../model/SSICert.js"
 import VCRequest from "../model/VCRequest.js"
 
 type RequestsDTO = {
   id: number
-  fromUser: {
-    email: string
-  }
+  fromUser: string | null
   date: number
   requestText: string
 }
@@ -18,11 +17,13 @@ type RequestDetailsDTO = RequestsDTO & {
 
 const mapRequestToDTO = (request: VCRequest): RequestsDTO => ({
   id: request.id,
-  fromUser: {
-    email: request.fromEmail,
-  },
+  fromUser:
+    request.attachedVCs
+      .getItems()
+      .find(vc => vc.credentialText.startsWith("IDENTITY\n\n"))
+      ?.credentialText.split("IDENTITY\n\n")[1] ?? null,
   date: request.createdAt.toMillis(),
-  requestText: request.text,
+  requestText: SSICert.import(request.VC).credentialText,
 })
 
 const mapRequestDetailsToDTO = (request: VCRequest): RequestDetailsDTO => ({
@@ -72,12 +73,23 @@ router.put("/:id", async ctx => {
   if (!isNaN(requestId) && RequestUpdateDTO != null) {
     const request = await ctx.orm.findOne(VCRequest, { forUser: ctx.state.user, id: requestId })
     if (request != null) {
-      request.accepted = RequestUpdateDTO.accept
-      if (!RequestUpdateDTO.accept) {
-        request.denyReason = RequestUpdateDTO.reason
+      if (request.forUser.id === ctx.state.user.id) {
+        request.accepted = RequestUpdateDTO.accept
+        if (!RequestUpdateDTO.accept) {
+          request.denyReason = RequestUpdateDTO.reason
+        }
+        if (request.accepted) {
+          const parentCert = SSICert.import(ctx.state.user.identity)
+          const newCert = SSICert.import(request.VC)
+          await parentCert.signSubCertificate(newCert, ctx.state.user.privateKey)
+          request.VC = newCert.export()
+        }
+        ctx.orm.persist(request)
+        ctx.status = 200
+      } else {
+        ctx.status = 403
+        ctx.body = { error: "You are not allowed to update this request" }
       }
-      ctx.orm.persist(request)
-      ctx.status = 200
     } else {
       ctx.status = 404
       ctx.body = { error: "VCRequest not found" }
