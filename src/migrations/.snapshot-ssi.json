@@ -33,17 +33,17 @@
           "nullable": false,
           "mappedType": "string"
         },
-        "private_key": {
-          "name": "private_key",
-          "type": "bytea",
+        "identity": {
+          "name": "identity",
+          "type": "text",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "mappedType": "blob"
+          "mappedType": "text"
         },
-        "public_key": {
-          "name": "public_key",
+        "private_key": {
+          "name": "private_key",
           "type": "bytea",
           "unsigned": false,
           "autoincrement": false,

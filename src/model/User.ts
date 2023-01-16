@@ -1,8 +1,7 @@
 import { Entity, PrimaryKey, Property } from "@mikro-orm/core"
 import bcrypt from "bcrypt"
-import crypto, { KeyObject } from "node:crypto"
-import { promisify } from "node:util"
-import { PrivateKeyObject, PublicKeyObject } from "../util/KeyObjectDB.js"
+import { KeyObject } from "node:crypto"
+import { PrivateKeyObject } from "../util/KeyObjectDB.js"
 
 @Entity()
 export default class User {
@@ -15,22 +14,19 @@ export default class User {
   @Property()
   password!: string
 
+  @Property({ type: "text" })
+  identity!: string
+
   @Property({ type: PrivateKeyObject })
   privateKey!: KeyObject
 
-  @Property({ type: PublicKeyObject })
-  publicKey!: KeyObject
-
-  static async create(name: string, password: string): Promise<User> {
+  static async create(name: string, password: string, identity: string, privateKey: KeyObject): Promise<User> {
     const user = new User()
     user.name = name
     user.password = password
-    const pair = await promisify(crypto.generateKeyPair)("rsa", {
-      modulusLength: 4096,
-    })
+    user.identity = identity
 
-    user.privateKey = pair.privateKey
-    user.publicKey = pair.publicKey
+    user.privateKey = privateKey
 
     return user
   }
