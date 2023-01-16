@@ -13,10 +13,10 @@ const SSI_ROOT_CERT_PATH = process.env.SSI_ROOT_CERT_PATH
 const SSI_ROOT_CERT_URL = process.env.SSI_ROOT_CERT_URL
 
 if (SSI_ROOT_CERT_PATH) {
-  logger.info("Using SSI_ROOT_CERT_PATH")
+  logger.info({ path: SSI_ROOT_CERT_PATH }, "Using SSI_ROOT_CERT_PATH")
   rootCert = SSICert.import(readFileSync(SSI_ROOT_CERT_PATH, "utf8"))
 } else if (SSI_ROOT_CERT_URL) {
-  logger.info("Using SSI_ROOT_CERT_URL")
+  logger.info({ url: SSI_ROOT_CERT_URL }, "Using SSI_ROOT_CERT_URL")
   rootCert = SSICert.import(await got(SSI_ROOT_CERT_URL).text())
 } else {
   throw new Error("SSI_ROOT_CERT_PATH or SSI_ROOT_CERT_URL must be provided")
