@@ -29,19 +29,19 @@ const router = new Router<MyState, MyContext>()
 type CreateRequestDTO = {
   requestText: string
   attachedVCs: string[]
-  holderEmail: string
+  fromUser: string
   issuerId: number
 }
 
 router.post("/request", async ctx => {
   const data = ctx.request.body as CreateRequestDTO
   logger.trace({ data }, "Got request creation request")
-  if (data?.requestText != null && data?.attachedVCs != null && data?.holderEmail != null) {
+  if (data?.requestText != null && data?.attachedVCs != null && data?.fromUser != null) {
     try {
       const issuerExists = (await ctx.orm.count(User, { id: data.issuerId })) === 1
       if (issuerExists) {
         const vcRequest = new VCRequest(
-          data.holderEmail,
+          data.fromUser,
           data.requestText,
           ctx.orm.getReference(User, data.issuerId),
           data.attachedVCs.map(vc => SSICert.import(vc)),
@@ -62,11 +62,11 @@ router.post("/request", async ctx => {
     } catch (e) {
       logger.error(e, "Error while creating request")
       ctx.status = 400
-      ctx.body = { error: "Bad request" }
+      ctx.body = { error: "Bad request, error during vc import" }
     }
   } else {
     ctx.status = 400
-    ctx.body = { error: "Bad request" }
+    ctx.body = { error: "Bad request. Invalid body" }
   }
 })
 
