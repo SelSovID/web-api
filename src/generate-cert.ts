@@ -57,7 +57,7 @@ if (parentCertificatePath) {
   }
   const parentCert = SSICert.import(readFileSync(parentCertificatePath, "utf8"))
   const parentCertKey = createPrivateKey(readFileSync(parentCertificateKeyPath, "utf8"))
-  parentCert.signSubCertificate(cert, parentCertKey)
+  await parentCert.signSubCertificate(cert, parentCertKey)
   console.error("Parent certificate found and used to sign the new certificate")
 } else {
   console.error("No parent certificate given. Generating self-signed certificate")
