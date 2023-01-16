@@ -88,24 +88,6 @@
           "nullable": false,
           "mappedType": "integer"
         },
-        "from_email": {
-          "name": "from_email",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "string"
-        },
-        "text": {
-          "name": "text",
-          "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "text"
-        },
         "retrieval_id": {
           "name": "retrieval_id",
           "type": "varchar(255)",
@@ -125,6 +107,15 @@
           "default": "null",
           "mappedType": "boolean"
         },
+        "vc": {
+          "name": "vc",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
         "deny_reason": {
           "name": "deny_reason",
           "type": "text",
@@ -142,6 +133,15 @@
           "primary": false,
           "nullable": false,
           "mappedType": "string"
+        },
+        "attached_vcs": {
+          "name": "attached_vcs",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
         }
       },
       "name": "vcrequest",
@@ -169,114 +169,6 @@
             "id"
           ],
           "referencedTableName": "public.user",
-          "updateRule": "cascade"
-        }
-      }
-    },
-    {
-      "columns": {
-        "_id": {
-          "name": "_id",
-          "type": "serial",
-          "unsigned": true,
-          "autoincrement": true,
-          "primary": true,
-          "nullable": false,
-          "mappedType": "integer"
-        },
-        "parent__id": {
-          "name": "parent__id",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "integer"
-        },
-        "for_request_id": {
-          "name": "for_request_id",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "integer"
-        },
-        "public_key": {
-          "name": "public_key",
-          "type": "bytea",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "blob"
-        },
-        "credential_text": {
-          "name": "credential_text",
-          "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "text"
-        },
-        "owner_signature": {
-          "name": "owner_signature",
-          "type": "bytea",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "blob"
-        },
-        "parent_signature": {
-          "name": "parent_signature",
-          "type": "bytea",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "blob"
-        }
-      },
-      "name": "ssicert",
-      "schema": "public",
-      "indexes": [
-        {
-          "keyName": "ssicert_pkey",
-          "columnNames": [
-            "_id"
-          ],
-          "composite": false,
-          "primary": true,
-          "unique": true
-        }
-      ],
-      "checks": [],
-      "foreignKeys": {
-        "ssicert_parent__id_foreign": {
-          "constraintName": "ssicert_parent__id_foreign",
-          "columnNames": [
-            "parent__id"
-          ],
-          "localTableName": "public.ssicert",
-          "referencedColumnNames": [
-            "_id"
-          ],
-          "referencedTableName": "public.ssicert",
-          "deleteRule": "set null",
-          "updateRule": "cascade"
-        },
-        "ssicert_for_request_id_foreign": {
-          "constraintName": "ssicert_for_request_id_foreign",
-          "columnNames": [
-            "for_request_id"
-          ],
-          "localTableName": "public.ssicert",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.vcrequest",
           "updateRule": "cascade"
         }
       }

@@ -56,7 +56,7 @@ const make = <T>(factory: () => Promise<T> | T, amount: number = 1): Promise<T[]
   Promise.all(new Array(amount).fill(null).map(factory))
 
 async function createUser([cert, privateKey]: [SSICert, KeyObject]): Promise<User> {
-  return User.create(faker.name.fullName(), faker.internet.password(), cert.export(), privateKey)
+  return User.create(faker.name.fullName(), faker.internet.password(), cert, privateKey)
 }
 
 async function createVCRequest(user: User): Promise<VCRequest> {

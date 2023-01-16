@@ -4,6 +4,8 @@ import LuxonDate from "../util/luxonDateDB.js"
 import SSICert from "./SSICert.js"
 import User from "./User.js"
 import { randomBytes } from "node:crypto"
+import DBSSIArray from "../util/SSIArrayDB.js"
+import DBSSI from "../util/DBSSI.js"
 
 @Entity()
 export default class VCRequest {
@@ -19,8 +21,8 @@ export default class VCRequest {
   @Property({ default: null })
   accepted: boolean | null = null
 
-  @Property()
-  VC!: string
+  @Property({ type: DBSSI })
+  VC!: SSICert
 
   @Property({ type: "text" })
   denyReason?: string
@@ -29,12 +31,12 @@ export default class VCRequest {
   createdAt = DateTime.now()
 
   // The references below are stirngs to avoid a circular dependency
-  @OneToMany({ mappedBy: (cert: SSICert) => cert.forRequest, cascade: [Cascade.ALL] })
-  attachedVCs = new Collection<SSICert, this>(this)
+  @Property({ type: DBSSIArray })
+  attachedVCs!: SSICert[]
 
   constructor(vc: SSICert, forUser: User, attachedVCs: SSICert[] = []) {
-    this.VC = vc.export()
+    this.VC = vc
     this.forUser = forUser!
-    this.attachedVCs = Collection.create(this, "attachedVCs", attachedVCs, false)
+    this.attachedVCs = attachedVCs
   }
 }

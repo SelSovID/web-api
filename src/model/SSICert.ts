@@ -1,8 +1,5 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core"
 import crypto, { KeyObject } from "node:crypto"
 import { promisify } from "node:util"
-import VCRequest from "./VCRequest.js"
-import { PublicKeyObject } from "../util/KeyObjectDB.js"
 
 const sign = promisify(crypto.sign)
 
@@ -13,30 +10,12 @@ export type SSICertJSON = [
   { ownerSignature: string | null },
   { parentSignature: string | null },
 ]
-
-@Entity()
 export default class SSICert {
   static HASH_ALGORITHM = "sha256"
-
-  @PrimaryKey()
-  _id!: number
-
-  @ManyToOne()
   parent: SSICert | null
-
-  @ManyToOne()
-  forRequest!: VCRequest
-
-  @Property({ type: PublicKeyObject })
   publicKey: KeyObject
-
-  @Property({ type: "text" })
   credentialText: string
-
-  @Property({ type: "bytea" })
   ownerSignature: Buffer | null
-
-  @Property({ type: "bytea" })
   parentSignature: Buffer | null
 
   private constructor(

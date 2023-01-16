@@ -1,7 +1,9 @@
 import { Entity, PrimaryKey, Property } from "@mikro-orm/core"
 import bcrypt from "bcrypt"
 import { KeyObject } from "node:crypto"
+import DBSSI from "../util/DBSSI.js"
 import { PrivateKeyObject } from "../util/KeyObjectDB.js"
+import SSICert from "./SSICert.js"
 
 @Entity()
 export default class User {
@@ -14,13 +16,13 @@ export default class User {
   @Property()
   password!: string
 
-  @Property({ type: "text" })
-  identity!: string
+  @Property({ type: DBSSI })
+  identity!: SSICert
 
   @Property({ type: PrivateKeyObject })
   privateKey!: KeyObject
 
-  static async create(name: string, password: string, identity: string, privateKey: KeyObject): Promise<User> {
+  static async create(name: string, password: string, identity: SSICert, privateKey: KeyObject): Promise<User> {
     const user = new User()
     user.name = name
     user.password = password

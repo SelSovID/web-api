@@ -19,16 +19,15 @@ const mapRequestToDTO = (request: VCRequest): RequestsDTO => ({
   id: request.id,
   fromUser:
     request.attachedVCs
-      .getItems()
       .find(vc => vc.credentialText.startsWith("IDENTITY\n\n"))
       ?.credentialText.split("IDENTITY\n\n")[1] ?? null,
   date: request.createdAt.toMillis(),
-  requestText: SSICert.import(request.VC).credentialText,
+  requestText: request.VC.credentialText,
 })
 
 const mapRequestDetailsToDTO = (request: VCRequest): RequestDetailsDTO => ({
   ...mapRequestToDTO(request),
-  attachedVCs: request.attachedVCs.getItems().map(vc => vc.export()),
+  attachedVCs: request.attachedVCs.map(vc => vc.export()),
 })
 
 const router = new Router<MyState, MyContext>()
@@ -43,11 +42,7 @@ router.get("/", async ctx => {
 router.get("/:id", async ctx => {
   const requestId = parseInt(ctx.params.id)
   if (!isNaN(requestId)) {
-    const request = await ctx.orm.findOne(
-      VCRequest,
-      { forUser: ctx.state.user, id: requestId },
-      { populate: ["attachedVCs"] },
-    )
+    const request = await ctx.orm.findOne(VCRequest, { forUser: ctx.state.user, id: requestId })
     if (request != null) {
       ctx.body = mapRequestDetailsToDTO(request)
       ctx.status = 200
@@ -79,10 +74,7 @@ router.put("/:id", async ctx => {
           request.denyReason = RequestUpdateDTO.reason
         }
         if (request.accepted) {
-          const parentCert = SSICert.import(ctx.state.user.identity)
-          const newCert = SSICert.import(request.VC)
-          await parentCert.signSubCertificate(newCert, ctx.state.user.privateKey)
-          request.VC = newCert.export()
+          await ctx.state.user.identity.signSubCertificate(request.VC, ctx.state.user.privateKey)
         }
         ctx.orm.persist(request)
         ctx.status = 200
