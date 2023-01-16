@@ -77,7 +77,7 @@ router.put("/:id", async ctx => {
         request.denyReason = RequestUpdateDTO.reason
       }
       ctx.orm.persist(request)
-      ctx.status = 200 // Fake succes
+      ctx.status = 200
     } else {
       ctx.status = 404
       ctx.body = { error: "VCRequest not found" }
