@@ -3,6 +3,7 @@ import { DateTime } from "luxon"
 import LuxonDate from "../util/luxonDateDB.js"
 import SSICert from "./SSICert.js"
 import User from "./User.js"
+import { randomBytes } from "node:crypto"
 
 @Entity()
 export default class VCRequest {
@@ -17,6 +18,9 @@ export default class VCRequest {
 
   @Property({ type: "text" })
   text!: string
+
+  @Property()
+  retrievalId: string = randomBytes(64).toString("base64")
 
   @Property({ default: null })
   accepted: boolean | null = null

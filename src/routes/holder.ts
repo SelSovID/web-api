@@ -54,6 +54,7 @@ router.post("/request", async ctx => {
           }
         }
         ctx.orm.persist(vcRequest)
+        ctx.body = { id: vcRequest.retrievalId }
         ctx.status = 201
       } else {
         ctx.status = 404
