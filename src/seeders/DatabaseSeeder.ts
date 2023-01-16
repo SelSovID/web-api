@@ -39,7 +39,7 @@ logger.info("Got root cert")
 export class DatabaseSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
     if (process.env.TEST_PASSWORD != null) {
-      const testUser = em.create(User, await createUser(await createSSICert()))
+      const testUser = em.create(User, await createUser(await createSSICert(), process.env.TEST_PASSWORD))
       const reqs = await make(createVCRequest.bind(null, testUser), 10)
       em.persist(reqs)
     }
@@ -55,8 +55,11 @@ export class DatabaseSeeder extends Seeder {
 const make = <T>(factory: () => Promise<T> | T, amount: number = 1): Promise<T[]> =>
   Promise.all(new Array(amount).fill(null).map(factory))
 
-async function createUser([cert, privateKey]: [SSICert, KeyObject]): Promise<User> {
-  return User.create(faker.name.fullName(), faker.internet.password(), cert, privateKey)
+async function createUser(
+  [cert, privateKey]: [SSICert, KeyObject],
+  password = faker.internet.password(),
+): Promise<User> {
+  return User.create(faker.name.fullName(), password, cert, privateKey)
 }
 
 async function createVCRequest(user: User): Promise<VCRequest> {
