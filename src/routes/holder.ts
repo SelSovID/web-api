@@ -4,13 +4,21 @@ import logger from "../log.js"
 import SSICert from "../model/SSICert.js"
 import User from "../model/User.js"
 import VCRequest from "../model/VCRequest.js"
-import { readFileSync } from "fs"
+import got from "got"
+import { readFileSync } from "node:fs"
 
-const ROOT_CERT_PATH = process.env.ROOT_CERT_PATH
-if (ROOT_CERT_PATH == null) {
-  throw new Error("ROOT_CERT_PATH not set")
+let rootCert: SSICert
+
+const SSI_ROOT_CERT_PATH = process.env.SSI_ROOT_CERT_PATH
+const SSI_ROOT_CERT_URL = process.env.SSI_ROOT_CERT_URL
+
+if (SSI_ROOT_CERT_PATH) {
+  rootCert = SSICert.import(readFileSync(SSI_ROOT_CERT_PATH, "utf8"))
+} else if (SSI_ROOT_CERT_URL) {
+  rootCert = SSICert.import(await got(SSI_ROOT_CERT_URL).text())
+} else {
+  throw new Error("SSI_ROOT_CERT_PATH or SSI_ROOT_CERT_URL must be provided")
 }
-const rootCert = SSICert.import(readFileSync(ROOT_CERT_PATH, "utf-8"))
 
 const router = new Router<MyState, MyContext>()
 
