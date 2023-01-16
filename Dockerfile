@@ -3,6 +3,8 @@ ENV NODE_ENV=development
 
 LABEL  org.opencontainers.image.source = "https://github.com/SelSovID/web-api" 
 
+EXPOSE 80
+
 WORKDIR /app
 
 COPY package*.json ./
