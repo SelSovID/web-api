@@ -1,7 +1,7 @@
 import { Cascade, Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property } from "@mikro-orm/core"
 import { DateTime } from "luxon"
 import LuxonDate from "../util/luxonDateDB.js"
-import SSICert from "./SSICert.js"
+import SSICert from "../SSICert.js"
 import User from "./User.js"
 import { randomBytes } from "node:crypto"
 import DBSSIArray from "../util/SSIArrayDB.js"

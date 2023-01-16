@@ -1,5 +1,5 @@
 #!/usr/bin/env ts-node-esm
-import SSICert from "./model/SSICert.js"
+import SSICert from "./SSICert.js"
 import { promisify } from "node:util"
 import { createPrivateKey, generateKeyPair as generateKeyPairCallback } from "node:crypto"
 import { parseArgs } from "node:util"

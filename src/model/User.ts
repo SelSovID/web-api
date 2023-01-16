@@ -3,7 +3,7 @@ import bcrypt from "bcrypt"
 import { KeyObject } from "node:crypto"
 import DBSSI from "../util/DBSSI.js"
 import { PrivateKeyObject } from "../util/KeyObjectDB.js"
-import SSICert from "./SSICert.js"
+import SSICert from "../SSICert.js"
 
 @Entity()
 export default class User {

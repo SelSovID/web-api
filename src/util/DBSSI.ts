@@ -1,5 +1,5 @@
 import { Type } from "@mikro-orm/core"
-import SSICert from "../model/SSICert.js"
+import SSICert from "../SSICert.js"
 
 export default class DBSSI extends Type<SSICert | undefined, string | undefined> {
   convertToDatabaseValue(value: SSICert | undefined): string | undefined {
