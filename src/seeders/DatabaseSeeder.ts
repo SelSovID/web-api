@@ -40,7 +40,10 @@ logger.info("Got root cert")
 export class DatabaseSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
     if (process.env.TEST_PASSWORD != null) {
-      const testUser = em.create(User, await createUser(await createSSICert(), process.env.TEST_PASSWORD))
+      const testUser = em.create(
+        User,
+        await createUser(await createSSICert("ISSUER\n\nTEST USER"), process.env.TEST_PASSWORD),
+      )
       const reqs = await make(createVCRequest.bind(null, testUser), 10)
       em.persist(reqs)
     }
@@ -67,21 +70,20 @@ async function createVCRequest(user: User): Promise<VCRequest> {
   return new VCRequest(
     (await createSSICert())[0],
     user,
-    (await make(createSSICert, 3)).map(([cert]) => cert),
+    [...(await make(createSSICert, 3)), await createSSICert(`IDENTITY\n\n${faker.name.jobTitle()}`)].map(
+      ([cert]) => cert,
+    ),
   )
 }
 
-/**
- * Creates a self-signed certificate
- * @param request what request to attach the cert to
- * @returns a new SSICert
- */
-async function createSSICert(): Promise<[SSICert, KeyObject]> {
+export async function createSSICert(
+  text = `${faker.lorem.words(1)}\n\n${faker.lorem.paragraph()}`,
+): Promise<[SSICert, KeyObject]> {
   const { publicKey, privateKey } = await promisify(crypto.generateKeyPair)("rsa", {
     modulusLength: 2048,
     publicExponent: 0x10001,
   })
-  const cert = await createCert(publicKey, `${faker.lorem.words(2)}\n\n${faker.lorem.paragraph()}`, privateKey)
+  const cert = await createCert(publicKey, text, privateKey)
   await signSubCertificate(rootCert, cert, rootPk)
   return [cert, privateKey]
 }
