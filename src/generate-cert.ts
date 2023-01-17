@@ -35,7 +35,6 @@ const {
     text: {
       type: "string",
       short: "t",
-      default: "SSI CERTIFICATE",
     },
   },
 })
@@ -49,7 +48,7 @@ const { publicKey, privateKey } = await generateKeyPair("rsa", {
   publicExponent: 0x10001,
 })
 
-const cert = await createCert(publicKey, text!, privateKey)
+const cert = await createCert(publicKey, text ?? "SSI CERTIFICATE", privateKey)
 
 if (parentCertificatePath) {
   if (!parentCertificateKeyPath) {
