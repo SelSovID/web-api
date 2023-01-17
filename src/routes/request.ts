@@ -2,7 +2,7 @@ import Router from "koa-router"
 import { MyContext, MyState } from "../index.js"
 import logger from "../log.js"
 import VCRequest from "../model/VCRequest.js"
-import { exportCert, signSubCertificate } from "../SSICertService.js"
+import { convertToObject, signSubCertificate, SSICertDTO } from "../SSICertService.js"
 
 type RequestsDTO = {
   id: number
@@ -12,7 +12,7 @@ type RequestsDTO = {
 }
 
 type RequestDetailsDTO = RequestsDTO & {
-  attachedVCs: string[]
+  attachedVCs: SSICertDTO[]
 }
 
 const mapRequestToDTO = (request: VCRequest): RequestsDTO => ({
@@ -27,7 +27,7 @@ const mapRequestToDTO = (request: VCRequest): RequestsDTO => ({
 
 const mapRequestDetailsToDTO = (request: VCRequest): RequestDetailsDTO => ({
   ...mapRequestToDTO(request),
-  attachedVCs: request.attachedVCs.map(vc => exportCert(vc)),
+  attachedVCs: request.attachedVCs.map(vc => convertToObject(vc)),
 })
 
 const router = new Router<MyState, MyContext>()

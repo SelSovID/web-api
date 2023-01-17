@@ -63,6 +63,24 @@ export function exportCert(cert: SSICert): Uint8Array {
   return data
 }
 
+export type SSICertDTO = {
+  parent: SSICertDTO | null
+  publicKey: string
+  credentialText: string
+  ownerSignature: string
+  parentSignature: string | null
+}
+
+export function convertToObject(cert: SSICert): SSICertDTO {
+  return {
+    parent: cert.parent ? convertToObject(cert.parent) : null,
+    publicKey: cert.publicKey.export({ format: "pem", type: "pkcs1" }) as string,
+    credentialText: cert.credentialText,
+    ownerSignature: Buffer.from(cert.ownerSignature).toString("base64"),
+    parentSignature: cert.parentSignature ? Buffer.from(cert.parentSignature).toString("base64") : null,
+  }
+}
+
 export function importCert(serializedCertificate: Uint8Array): SSICert {
   const message = SSICertBuf.decode(serializedCertificate) as proto.Message<CertEncoded>
   return constructClassFromEncoded(message as unknown as CertEncoded)
