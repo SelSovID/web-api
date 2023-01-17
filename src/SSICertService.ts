@@ -50,25 +50,30 @@ type CertEncoded = {
   parentSignature?: Uint8Array
 }
 
-export function exportCert(cert: SSICert): Uint8Array {
+function createProtoMessage(cert: SSICert): proto.Message {
   const message = SSICertBuf.create({
-    parent: cert.parent ? exportCert(cert.parent) : undefined,
+    parent: cert.parent ? createProtoMessage(cert.parent) : null,
     publicKey: cert.publicKey.export({ format: "pem", type: "pkcs1" }),
     credentialText: cert.credentialText,
     ownerSignature: cert.ownerSignature,
     parentSignature: cert.parentSignature,
-  } as CertEncoded)
+  })
+  return message
+}
+
+export function exportCert(cert: SSICert): Uint8Array {
+  const message = createProtoMessage(cert)
 
   const data = SSICertBuf.encode(message).finish()
   return data
 }
 
 export type SSICertDTO = {
-  parent: SSICertDTO | null
+  parent?: SSICertDTO | null
   publicKey: string
   credentialText: string
   ownerSignature: string
-  parentSignature: string | null
+  parentSignature?: string | null
 }
 
 export function convertToObject(cert: SSICert): SSICertDTO {
@@ -82,8 +87,8 @@ export function convertToObject(cert: SSICert): SSICertDTO {
 }
 
 export function importCert(serializedCertificate: Uint8Array): SSICert {
-  const message = SSICertBuf.decode(serializedCertificate) as proto.Message<CertEncoded>
-  return constructClassFromEncoded(message as unknown as CertEncoded)
+  const message = SSICertBuf.toObject(SSICertBuf.decode(serializedCertificate)) as CertEncoded
+  return constructClassFromEncoded(message)
 }
 
 function constructClassFromEncoded(encoded: CertEncoded): SSICert {
