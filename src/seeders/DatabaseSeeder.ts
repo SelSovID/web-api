@@ -21,10 +21,10 @@ const SSI_ROOT_PRIVATE_KEY_PATH = process.env.SSI_ROOT_PRIVATE_KEY_PATH
 
 if (SSI_ROOT_CERT_PATH) {
   logger.info({ path: SSI_ROOT_CERT_PATH }, "Using SSI_ROOT_CERT_PATH")
-  rootCert = importCert(readFileSync(SSI_ROOT_CERT_PATH, "utf8"))
+  rootCert = importCert(readFileSync(SSI_ROOT_CERT_PATH))
 } else if (SSI_ROOT_CERT_URL) {
   logger.info({ url: SSI_ROOT_CERT_URL }, "Using SSI_ROOT_CERT_URL")
-  rootCert = importCert(await got(SSI_ROOT_CERT_URL).text())
+  rootCert = importCert(await got(SSI_ROOT_CERT_URL).buffer())
 } else {
   throw new Error("SSI_ROOT_CERT_PATH or SSI_ROOT_CERT_URL must be provided")
 }

@@ -4,8 +4,8 @@ export default class SSICert {
   parent: SSICert | null
   publicKey: KeyObject
   credentialText: string
-  ownerSignature: Buffer | null
-  parentSignature: Buffer | null
+  ownerSignature: Uint8Array
+  parentSignature: Uint8Array | null
 
   constructor(
     parentCertificate: SSICert["parent"],
