@@ -18,6 +18,27 @@
       "args": ["${file}"],
       "outputCapture": "std",
       "skipFiles": ["<node_internals>/**/*.js"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug generate sub",
+      "runtimeArgs": ["--loader", "ts-node/esm"],
+      "args": [
+        "src/generate-cert.ts",
+        "-c",
+        "../certificates/test.ssi",
+        "-k",
+        "../certificates/test-key.pem",
+        "-p",
+        "../certificates/root.ssi",
+        "-K",
+        "../certificates/root-key.pem",
+        "-t",
+        "\"This is a sub certificate\""
+      ],
+      "outputCapture": "std",
+      "skipFiles": ["<node_internals>/**/*.js"]
     }
   ]
 }
