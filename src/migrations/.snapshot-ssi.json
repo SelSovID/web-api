@@ -35,12 +35,12 @@
         },
         "identity": {
           "name": "identity",
-          "type": "text",
+          "type": "bytea",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "mappedType": "text"
+          "mappedType": "blob"
         },
         "private_key": {
           "name": "private_key",
@@ -109,12 +109,12 @@
         },
         "vc": {
           "name": "vc",
-          "type": "text",
+          "type": "bytea",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "mappedType": "text"
+          "mappedType": "blob"
         },
         "deny_reason": {
           "name": "deny_reason",

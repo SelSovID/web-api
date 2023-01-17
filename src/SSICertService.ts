@@ -1,13 +1,13 @@
 import { createPublicKey, KeyObject, sign as signCb, verify } from "node:crypto"
 import SSICert from "./SSICert.js"
 import { promisify } from "node:util"
-import { load, Message } from "protobufjs"
+import proto from "protobufjs"
 
 const sign = promisify(signCb)
 
 const HASH_ALGORITHM = "sha256"
 
-const SSIBufRoot = await load("./SSICert.proto")
+const SSIBufRoot = await proto.load("./SSICert.proto")
 const SSICertBuf = SSIBufRoot.lookupType("SSICert")
 
 export async function createCert(
@@ -64,7 +64,7 @@ export function exportCert(cert: SSICert): Uint8Array {
 }
 
 export function importCert(serializedCertificate: Uint8Array): SSICert {
-  const message = SSICertBuf.decode(serializedCertificate) as Message<CertEncoded>
+  const message = SSICertBuf.decode(serializedCertificate) as proto.Message<CertEncoded>
   return constructClassFromEncoded(message as unknown as CertEncoded)
 }
 
