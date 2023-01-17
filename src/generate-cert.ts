@@ -1,9 +1,9 @@
 #!/usr/bin/env ts-node-esm
-import SSICert from "./SSICert.js"
 import { promisify } from "node:util"
 import { createPrivateKey, generateKeyPair as generateKeyPairCallback } from "node:crypto"
 import { parseArgs } from "node:util"
 import { readFileSync, writeFileSync } from "node:fs"
+import { createCert, exportCert, importCert, signSubCertificate } from "./SSICertService.js"
 const generateKeyPair = promisify(generateKeyPairCallback)
 
 const {
@@ -49,21 +49,21 @@ const { publicKey, privateKey } = await generateKeyPair("rsa", {
   publicExponent: 0x10001,
 })
 
-const cert = await SSICert.create(publicKey, text!, privateKey)
+const cert = await createCert(publicKey, text!, privateKey)
 
 if (parentCertificatePath) {
   if (!parentCertificateKeyPath) {
     throw new Error("A parent certificate was provided but no parent certificate key was provided")
   }
-  const parentCert = SSICert.import(readFileSync(parentCertificatePath, "utf8"))
+  const parentCert = importCert(readFileSync(parentCertificatePath, "utf8"))
   const parentCertKey = createPrivateKey(readFileSync(parentCertificateKeyPath, "utf8"))
-  await parentCert.signSubCertificate(cert, parentCertKey)
+  await signSubCertificate(parentCert, cert, parentCertKey)
   console.error("Parent certificate found and used to sign the new certificate")
 } else {
   console.error("No parent certificate given. Generating self-signed certificate")
 }
 
-writeFileSync(certificatePath, cert.export())
+writeFileSync(certificatePath, exportCert(cert))
 
 if (privateKeyPath) {
   writeFileSync(privateKeyPath, privateKey.export({ format: "pem", type: "pkcs1" }))

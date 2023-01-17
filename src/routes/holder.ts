@@ -6,6 +6,7 @@ import User from "../model/User.js"
 import VCRequest from "../model/VCRequest.js"
 import got from "got"
 import { readFileSync } from "node:fs"
+import { importCert, verifyChain } from "../SSICertService.js"
 
 let rootCert: SSICert
 
@@ -14,10 +15,10 @@ const SSI_ROOT_CERT_URL = process.env.SSI_ROOT_CERT_URL
 
 if (SSI_ROOT_CERT_PATH) {
   logger.info({ path: SSI_ROOT_CERT_PATH }, "Using SSI_ROOT_CERT_PATH")
-  rootCert = SSICert.import(readFileSync(SSI_ROOT_CERT_PATH, "utf8"))
+  rootCert = importCert(readFileSync(SSI_ROOT_CERT_PATH, "utf8"))
 } else if (SSI_ROOT_CERT_URL) {
   logger.info({ url: SSI_ROOT_CERT_URL }, "Using SSI_ROOT_CERT_URL")
-  rootCert = SSICert.import(await got(SSI_ROOT_CERT_URL).text())
+  rootCert = importCert(await got(SSI_ROOT_CERT_URL).text())
 } else {
   throw new Error("SSI_ROOT_CERT_PATH or SSI_ROOT_CERT_URL must be provided")
 }
@@ -39,14 +40,14 @@ router.post("/request", async ctx => {
     try {
       const issuerExists = (await ctx.orm.count(User, { id: data.issuerId })) === 1
       if (issuerExists) {
-        const vc = SSICert.import(data.vc)
+        const vc = importCert(data.vc)
         const vcRequest = new VCRequest(
           vc,
           ctx.orm.getReference(User, data.issuerId),
-          data.attachedVCs.map(vc => SSICert.import(vc)),
+          data.attachedVCs.map(vc => importCert(vc)),
         )
         for (const cert of vcRequest.attachedVCs) {
-          if (!cert.verifyChain([rootCert])) {
+          if (!verifyChain(cert, [rootCert])) {
             ctx.status = 404
             ctx.body = { error: "One of your provided verifiable credentials wasn't signed by a recognized root" }
             return

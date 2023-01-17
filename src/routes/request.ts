@@ -2,6 +2,7 @@ import Router from "koa-router"
 import { MyContext, MyState } from "../index.js"
 import logger from "../log.js"
 import VCRequest from "../model/VCRequest.js"
+import { exportCert, signSubCertificate } from "../SSICertService.js"
 
 type RequestsDTO = {
   id: number
@@ -26,7 +27,7 @@ const mapRequestToDTO = (request: VCRequest): RequestsDTO => ({
 
 const mapRequestDetailsToDTO = (request: VCRequest): RequestDetailsDTO => ({
   ...mapRequestToDTO(request),
-  attachedVCs: request.attachedVCs.map(vc => vc.export()),
+  attachedVCs: request.attachedVCs.map(vc => exportCert(vc)),
 })
 
 const router = new Router<MyState, MyContext>()
@@ -73,7 +74,7 @@ router.put("/:id", async ctx => {
           request.denyReason = RequestUpdateDTO.reason
         }
         if (request.accepted) {
-          await ctx.state.user.identity.signSubCertificate(request.VC, ctx.state.user.privateKey)
+          await signSubCertificate(ctx.state.user.identity, request.VC, ctx.state.user.privateKey)
         }
         ctx.orm.persist(request)
         ctx.status = 200

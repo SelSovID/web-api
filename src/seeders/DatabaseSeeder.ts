@@ -5,11 +5,12 @@ import { Seeder } from "@mikro-orm/seeder"
 import User from "../model/User.js"
 import { faker } from "@faker-js/faker"
 import VCRequest from "../model/VCRequest.js"
-import SSICert from "../model/SSICert.js"
+import SSICert from "../SSICert.js"
 import { promisify } from "node:util"
 import { readFileSync } from "node:fs"
 import got from "got"
 import logger from "../log.js"
+import { createCert, importCert, signSubCertificate } from "../SSICertService.js"
 
 let rootCert: SSICert
 let rootPk: KeyObject
@@ -20,10 +21,10 @@ const SSI_ROOT_PRIVATE_KEY_PATH = process.env.SSI_ROOT_PRIVATE_KEY_PATH
 
 if (SSI_ROOT_CERT_PATH) {
   logger.info({ path: SSI_ROOT_CERT_PATH }, "Using SSI_ROOT_CERT_PATH")
-  rootCert = SSICert.import(readFileSync(SSI_ROOT_CERT_PATH, "utf8"))
+  rootCert = importCert(readFileSync(SSI_ROOT_CERT_PATH, "utf8"))
 } else if (SSI_ROOT_CERT_URL) {
   logger.info({ url: SSI_ROOT_CERT_URL }, "Using SSI_ROOT_CERT_URL")
-  rootCert = SSICert.import(await got(SSI_ROOT_CERT_URL).text())
+  rootCert = importCert(await got(SSI_ROOT_CERT_URL).text())
 } else {
   throw new Error("SSI_ROOT_CERT_PATH or SSI_ROOT_CERT_URL must be provided")
 }
@@ -80,7 +81,7 @@ async function createSSICert(): Promise<[SSICert, KeyObject]> {
     modulusLength: 2048,
     publicExponent: 0x10001,
   })
-  const cert = await SSICert.create(publicKey, `${faker.lorem.words(2)}\n\n${faker.lorem.paragraph()}`, privateKey)
-  await rootCert.signSubCertificate(cert, rootPk)
+  const cert = await createCert(publicKey, `${faker.lorem.words(2)}\n\n${faker.lorem.paragraph()}`, privateKey)
+  await signSubCertificate(rootCert, cert, rootPk)
   return [cert, privateKey]
 }

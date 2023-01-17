@@ -1,10 +1,11 @@
 import { Type } from "@mikro-orm/core"
 import SSICert from "../SSICert.js"
+import { exportCert, importCert } from "../SSICertService.js"
 
 export default class DBSSI extends Type<SSICert | undefined, string | undefined> {
   convertToDatabaseValue(value: SSICert | undefined): string | undefined {
     if (value instanceof SSICert) {
-      return value.export()
+      return exportCert(value)
     } else if (value == null) {
       return value
     } else {
@@ -14,7 +15,7 @@ export default class DBSSI extends Type<SSICert | undefined, string | undefined>
 
   convertToJSValue(value: string | undefined): SSICert | undefined {
     if (value != null) {
-      return SSICert.import(value)
+      return importCert(value)
     } else {
       return value
     }
