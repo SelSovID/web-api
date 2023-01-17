@@ -15,7 +15,7 @@ export async function createCert(
   credentialText: SSICert["credentialText"],
   ownerPrivateKey: KeyObject,
 ) {
-  const dataToSignForOwner = getOwnerSignableData(ownerPublicKey, credentialText)
+  const dataToSignForOwner = getOwnerSignableData(credentialText)
   const ownerSignature = await sign(HASH_ALGORITHM, dataToSignForOwner, ownerPrivateKey)
   return new SSICert(null, ownerPublicKey, credentialText, ownerSignature, null)
 }
@@ -111,7 +111,7 @@ export async function signSubCertificate(
   subCertificate.parent = parentCert
   subCertificate.parentSignature = await sign(
     HASH_ALGORITHM,
-    getParentSignableData(subCertificate.publicKey, subCertificate.credentialText, subCertificate.ownerSignature),
+    getParentSignableData(subCertificate.credentialText, subCertificate.ownerSignature),
     privateKey,
   )
 }
@@ -120,7 +120,7 @@ export function verifyOwner(cert: SSICert): boolean {
   if (cert.ownerSignature == null) {
     throw new Error("Cannot verify owner signature of unsigned certificate")
   }
-  const dataToVerify = getOwnerSignableData(cert.publicKey, cert.credentialText)
+  const dataToVerify = getOwnerSignableData(cert.credentialText)
   return verify(HASH_ALGORITHM, dataToVerify, cert.publicKey, cert.ownerSignature)
 }
 
@@ -128,7 +128,7 @@ export function verifyParent(cert: SSICert): boolean {
   if (cert.parentSignature == null) {
     throw new Error("Cannot verify parent-signature of unsigned certificate")
   }
-  const dataToVerify = getParentSignableData(cert.publicKey, cert.credentialText, cert.ownerSignature)
+  const dataToVerify = getParentSignableData(cert.credentialText, cert.ownerSignature)
   if (cert.parent == null) {
     throw new Error("Cannot verify parent-signature of certificate without parent")
   }
@@ -165,22 +165,13 @@ function internalVerifyChain(cert: SSICert, knownRoots: SSICert[], visitedCerts:
   }
 }
 
-function getOwnerSignableData(ownerPublicKey: KeyObject, credentialText: string): Uint8Array {
-  return Buffer.from(`${ownerPublicKey.export({ format: "pem", type: "pkcs1" })}${credentialText}`)
+function getOwnerSignableData(credentialText: string): Uint8Array {
+  return Buffer.from(`${credentialText}`)
 }
 
-function getParentSignableData(
-  ownerPublicKey: KeyObject,
-  credentialText: string,
-  ownerSignature: Uint8Array,
-): Uint8Array {
+function getParentSignableData(credentialText: string, ownerSignature: Uint8Array): Uint8Array {
   const ownerSignatureString = Buffer.from(ownerSignature).toString("base64")
-  return Buffer.from(
-    `${ownerPublicKey.export({
-      format: "pem",
-      type: "pkcs1",
-    })}${credentialText}${ownerSignatureString}`,
-  )
+  return Buffer.from(`${credentialText}${ownerSignatureString}`)
 }
 export type SSICertJSON = {
   parent?: SSICertJSON
