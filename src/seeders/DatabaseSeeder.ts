@@ -57,7 +57,7 @@ export class DatabaseSeeder extends Seeder {
 }
 
 const make = <T>(factory: () => Promise<T> | T, amount: number = 1): Promise<T[]> =>
-  Promise.all(new Array(amount).fill(null).map(factory))
+  Promise.all(new Array(amount).fill(null).map(() => factory()))
 
 async function createUser(
   [cert, privateKey]: [SSICert, KeyObject],
