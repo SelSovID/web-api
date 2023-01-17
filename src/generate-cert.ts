@@ -55,7 +55,7 @@ if (parentCertificatePath) {
   if (!parentCertificateKeyPath) {
     throw new Error("A parent certificate was provided but no parent certificate key was provided")
   }
-  const parentCert = importCert(readFileSync(parentCertificatePath, "utf8"))
+  const parentCert = importCert(readFileSync(parentCertificatePath))
   const parentCertKey = createPrivateKey(readFileSync(parentCertificateKeyPath, "utf8"))
   await signSubCertificate(parentCert, cert, parentCertKey)
   console.error("Parent certificate found and used to sign the new certificate")
