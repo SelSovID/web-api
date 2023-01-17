@@ -4,7 +4,7 @@ syntax = "proto3";
 // SSICert type
 message SSICert {
   optional SSICert parent = 1;
-  bytes publicKey = 2;
+  string publicKey = 2;
   string credentialText = 3;
   bytes ownerSignature = 4;
   optional bytes parentSignature = 5;
