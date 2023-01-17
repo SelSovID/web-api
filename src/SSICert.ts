@@ -14,8 +14,15 @@ export default class SSICert {
     ownerSignature: SSICert["ownerSignature"],
     parentSignature: SSICert["parentSignature"],
   ) {
-    if (!(ownerPublicKey instanceof KeyObject) || credentialText == null || !(ownerSignature instanceof Uint8Array)) {
-      throw new Error("Invalid arguments")
+    if (!(ownerPublicKey instanceof KeyObject)) {
+      throw new Error("Invalid owner public key")
+    }
+    if (typeof credentialText !== "string") {
+      throw new Error("Invalid credential text")
+    }
+
+    if (!(ownerSignature instanceof Uint8Array)) {
+      throw new Error("invalid owner signature")
     }
     this.parent = parentCertificate
     this.publicKey = ownerPublicKey
