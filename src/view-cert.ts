@@ -1,6 +1,7 @@
 #!/usr/bin/env ts-node-esm
 import { readFileSync } from "node:fs"
 import { parseArgs } from "node:util"
+import SSICert from "./SSICert.js"
 import { convertToObject, importCert } from "./SSICertService.js"
 
 const {
@@ -25,11 +26,19 @@ if (certificatePath) {
   } else {
     cert = importCert(readFileSync(certificatePath))
   }
-
-  console.log("cert", cert)
-  const obj = convertToObject(cert)
-  console.log("obj", obj)
-  console.log("json", JSON.stringify(obj, null, 2))
+  logCert(cert)
 } else {
   throw new Error("Certificate path not provided")
+}
+
+function logCert(cert: SSICert) {
+  const obj = convertToObject(cert)
+  console.log(`credential text:\n${obj.credentialText}`)
+  console.log(`public key:\n${obj.publicKey}`)
+  console.log(`owner signature:\n${obj.ownerSignature}`)
+  if (cert.parent) {
+    console.log(`parent signature:\n${obj.parentSignature}`)
+    console.log("NEXT PARENT\n\n")
+    logCert(cert.parent)
+  }
 }

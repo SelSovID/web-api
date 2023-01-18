@@ -49,6 +49,7 @@ router.post("/request", async ctx => {
           )
           for (const cert of vcRequest.attachedVCs) {
             if (!verifyChain(cert, [rootCert])) {
+              logger.info("Invalid chain posted in request vc")
               ctx.status = 400
               ctx.body = { error: "One of your provided verifiable credentials wasn't valid" }
               return
@@ -58,10 +59,12 @@ router.post("/request", async ctx => {
           ctx.body = { id: vcRequest.retrievalId }
           ctx.status = 201
         } else {
+          logger.info("Invalid owner signature posted in request vc")
           ctx.status = 400
           ctx.body = { error: "Bad request. Requested VC doesn't have valid owner signature" }
         }
       } else {
+        logger.info({ issuerId: data.issuerId }, "Issuer not found")
         ctx.status = 404
         ctx.body = { error: "Issuer not found" }
       }
@@ -71,6 +74,7 @@ router.post("/request", async ctx => {
       ctx.body = { error: "Bad request, error during vc import" }
     }
   } else {
+    logger.debug({ data }, "Holder vcrequest post invalid body")
     ctx.status = 400
     ctx.body = { error: "Bad request. Invalid body" }
   }
@@ -90,11 +94,14 @@ router.get("/request/:id", async ctx => {
         vc: request.accepted ? request.VC : null,
       } as RequestRepsonseDTO
 
+      logger.trace("Holder successfully retrieved request")
       ctx.status = 200
     } else {
+      logger.trace("Holder tried to retrieve request before it was accepted")
       ctx.status = 202
     }
   } else {
+    logger.debug("Holder tried to retrieve non-existing request")
     ctx.status = 404
     ctx.body = { error: "Request not found" }
   }
