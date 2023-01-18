@@ -26,6 +26,7 @@ app.use(async (ctx, next) => {
   // Add orm to context. Do this in middleware to enable await
   ctx.orm = (await orm).em.fork()
   await next()
+  await ctx.orm.flush()
 })
 
 app.use(
