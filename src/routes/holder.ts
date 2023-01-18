@@ -6,7 +6,7 @@ import User from "../model/User.js"
 import VCRequest from "../model/VCRequest.js"
 import got from "got"
 import { readFileSync } from "node:fs"
-import { importCert, verifyChain } from "../SSICertService.js"
+import { importCert, verifyChain, verifyOwner } from "../SSICertService.js"
 
 let rootCert: SSICert
 
@@ -41,21 +41,26 @@ router.post("/request", async ctx => {
       const issuerExists = (await ctx.orm.count(User, { id: data.issuerId })) === 1
       if (issuerExists) {
         const vc = importCert(Buffer.from(data.vc, "base64"))
-        const vcRequest = new VCRequest(
-          vc,
-          ctx.orm.getReference(User, data.issuerId),
-          data.attachedVCs.map(vc => importCert(Buffer.from(vc, "base64"))),
-        )
-        for (const cert of vcRequest.attachedVCs) {
-          if (!verifyChain(cert, [rootCert])) {
-            ctx.status = 404
-            ctx.body = { error: "One of your provided verifiable credentials wasn't signed by a recognized root" }
-            return
+        if (verifyOwner(vc)) {
+          const vcRequest = new VCRequest(
+            vc,
+            ctx.orm.getReference(User, data.issuerId),
+            data.attachedVCs.map(vc => importCert(Buffer.from(vc, "base64"))),
+          )
+          for (const cert of vcRequest.attachedVCs) {
+            if (!verifyChain(cert, [rootCert])) {
+              ctx.status = 400
+              ctx.body = { error: "One of your provided verifiable credentials wasn't valid" }
+              return
+            }
           }
+          ctx.orm.persist(vcRequest)
+          ctx.body = { id: vcRequest.retrievalId }
+          ctx.status = 201
+        } else {
+          ctx.status = 400
+          ctx.body = { error: "Bad request. Requested VC doesn't have valid owner signature" }
         }
-        ctx.orm.persist(vcRequest)
-        ctx.body = { id: vcRequest.retrievalId }
-        ctx.status = 201
       } else {
         ctx.status = 404
         ctx.body = { error: "Issuer not found" }

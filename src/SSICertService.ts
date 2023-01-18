@@ -161,7 +161,7 @@ function internalVerifyChain(cert: SSICert, knownRoots: SSICert[], visitedCerts:
       return false
     }
   } else {
-    throw new Error("Certificate has invalid owner signature")
+    return false
   }
 }
 
