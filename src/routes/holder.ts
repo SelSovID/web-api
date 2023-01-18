@@ -6,7 +6,7 @@ import User from "../model/User.js"
 import VCRequest from "../model/VCRequest.js"
 import got from "got"
 import { readFileSync } from "node:fs"
-import { importCert, verifyChain, verifyOwner } from "../SSICertService.js"
+import { exportCert, importCert, verifyChain, verifyOwner } from "../SSICertService.js"
 
 let rootCert: SSICert
 
@@ -91,7 +91,7 @@ router.get("/request/:id", async ctx => {
     if (request.accepted != null) {
       ctx.body = {
         accept: request.accepted,
-        vc: request.accepted ? request.VC : null,
+        vc: request.accepted ? Buffer.from(exportCert(request.VC)).toString("base64") : null,
       } as RequestRepsonseDTO
 
       logger.trace("Holder successfully retrieved request")
