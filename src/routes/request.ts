@@ -58,7 +58,7 @@ router.get("/:id", async ctx => {
 
 type RequestUpdateDTO = {
   accept: boolean
-  reason?: string
+  denyReason?: string
 }
 
 router.put("/:id", async ctx => {
@@ -71,7 +71,7 @@ router.put("/:id", async ctx => {
       if (request.forUser.id === ctx.state.user.id) {
         request.accepted = RequestUpdateDTO.accept
         if (!RequestUpdateDTO.accept) {
-          request.denyReason = RequestUpdateDTO.reason
+          request.denyReason = RequestUpdateDTO.denyReason
         }
         if (request.accepted) {
           await signSubCertificate(ctx.state.user.identity, request.VC, ctx.state.user.privateKey)
