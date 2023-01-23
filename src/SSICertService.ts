@@ -68,15 +68,15 @@ export function exportCert(cert: SSICert): Uint8Array {
   return data
 }
 
-export type SSICertDTO = {
-  parent?: SSICertDTO | null
+export type SSICertPlain = {
+  parent?: SSICertPlain | null
   publicKey: string
   credentialText: string
   ownerSignature: string
   parentSignature?: string | null
 }
 
-export function convertToObject(cert: SSICert): SSICertDTO {
+export function convertToObject(cert: SSICert): SSICertPlain {
   return {
     parent: cert.parent ? convertToObject(cert.parent) : null,
     publicKey: cert.publicKey.export({ format: "pem", type: "pkcs1" }) as string,
