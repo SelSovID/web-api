@@ -92,6 +92,7 @@ router.get("/request/:id", async ctx => {
       ctx.body = {
         accept: request.accepted,
         vc: request.accepted ? Buffer.from(exportCert(request.VC)).toString("base64") : null,
+        denyReason: request.denyReason,
       } as RequestRepsonseDTO
 
       logger.trace("Holder successfully retrieved request")
