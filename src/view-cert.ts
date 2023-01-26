@@ -5,7 +5,7 @@ import SSICert from "./SSICert.js"
 import { convertToObject, importCert } from "./SSICertService.js"
 
 const {
-  values: { certificate: certificatePath, base64 },
+  values: { certificate: certificatePath, base64, help },
 } = parseArgs({
   options: {
     certificate: {
@@ -16,8 +16,29 @@ const {
       type: "boolean",
       short: "b",
     },
+    help: {
+      type: "boolean",
+      short: "h",
+    },
   },
 })
+
+const helpText = `
+Usage: view-cert [options]
+
+This command can view the contents of a SSI certificate.
+
+Options:
+  -c, --certificate  Path to the certificate file
+  -b, --base64       If the certificate is base64 encoded. 
+                     If you omit this flag, the certificate is assumed to be in protobuf format.
+  -h, --help         Show this help text
+`
+
+if (help) {
+  console.log(helpText)
+  process.exit(0)
+}
 
 if (certificatePath) {
   let cert
@@ -28,7 +49,7 @@ if (certificatePath) {
   }
   logCert(cert)
 } else {
-  throw new Error("Certificate path not provided")
+  throw new Error("Certificate path not provided, use --help to see usage")
 }
 
 function logCert(cert: SSICert) {

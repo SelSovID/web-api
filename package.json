@@ -9,7 +9,9 @@
     "orm": "ts-node-esm node_modules/.bin/mikro-orm",
     "fresh-db": "npm run orm migration:fresh && npm run orm seeder:run",
     "test": "ava src/**/*.test.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "generate-cert": "ts-node-esm src/generate-cert.ts",
+    "view-cert": "ts-node-esm src/view-cert.ts"
   },
   "repository": {
     "type": "git",
