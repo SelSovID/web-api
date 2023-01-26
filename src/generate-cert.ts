@@ -13,6 +13,7 @@ const {
     parentCertificate: parentCertificatePath,
     parentCertificateKey: parentCertificateKeyPath,
     text,
+    base64,
     help,
   },
 } = parseArgs({
@@ -20,6 +21,10 @@ const {
     certificate: {
       type: "string",
       short: "c",
+    },
+    text: {
+      type: "string",
+      short: "t",
     },
     privateKey: {
       type: "string",
@@ -33,9 +38,9 @@ const {
       type: "string",
       short: "K",
     },
-    text: {
-      type: "string",
-      short: "t",
+    base64: {
+      type: "boolean",
+      short: "b",
     },
     help: {
       type: "boolean",
@@ -59,11 +64,27 @@ to sign the new certificate with a parent certificate.
 
 Options:
 
-  --certificate, -c The path to the certificate file to be generated
-  --text, -t The text to be written on the certificate
-  --privateKey, -k The path to the private key file to be generated, this is optional, if you don't provide it the private key will not be saved
-  --parentCertificate, -p The path to the parent certificate file to be used to sign the new certificate. If not provided, a self-signed certificate will be generated
-  --parentCertificateKey, -K The path to the parent certificate private key file to be used to sign the new certificate. If not provided, a self-signed certificate will be generated
+  --certificate, -c           The path to the certificate file to be generated
+
+  --text, -t                  The text to be written on the certificate
+
+  --privateKey, -k            The path to the private key file to be generated,
+                              this is optional, if you don't provide it the
+                              private key will not be saved
+
+  --parentCertificate, -p     The path to the parent certificate file to be used
+                              to sign the new certificate. If not provided, a
+                              self-signed certificate will be generated.
+
+  --parentCertificateKey, -K  The path to the parent certificate private key
+                              file to be used to sign the new certificate. If
+                              not provided, a self-signed certificate will be
+                              generated
+
+  --base64, -b                Encode the certificate in base64. If you omit this
+                              the certificate will be protobuf encoded.
+
+  --help, -h                  Show this help text
 `
 
 if (help) {
@@ -96,8 +117,11 @@ if (parentCertificatePath) {
   console.error("No parent certificate given. Generating self-signed certificate")
 }
 
-writeFileSync(certificatePath, exportCert(cert))
-
+if (base64) {
+  writeFileSync(certificatePath, Buffer.from(exportCert(cert)).toString("base64"))
+} else {
+  writeFileSync(certificatePath, exportCert(cert))
+}
 if (privateKeyPath) {
   writeFileSync(privateKeyPath, privateKey.export({ format: "pem", type: "pkcs1" }))
 } else {
