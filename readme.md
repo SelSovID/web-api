@@ -4,7 +4,7 @@ This is the repository for the web api supporting the Self-sovereign ID project.
 
 ## How to run locally
 
-To run this project you need to have [NodeJs](https://nodejs.org/en/) installed.
+To run this project you need to have [NodeJs](https://nodejs.org/en/) 18.3.0 or above installed.
 
 Clone the repository to a local folder. Then cd into it and run
 
